@@ -9,9 +9,9 @@ class forum : public eosio::contract {
         forum(account_name self)
         :eosio::contract(self)
         {}
-
+        /// @param certify - under penalty of perjury the content of this post is true.
         // @abi
-        void post(const account_name account, const uint32_t post_num, const std::string title, const std::string content,
+        void post(const account_name account, const uint32_t post_num, const std::string& title, const std::string& content,
                   const account_name reply_to_account, const uint32_t reply_to_post_num, const bool certify) {
             require_auth(account);
             eosio_assert(title.size() < 128, "Title should be less than 128 characters long.");
