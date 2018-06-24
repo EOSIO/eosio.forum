@@ -45,9 +45,10 @@ class forum : public eosio::contract {
         }
 
         // @abi
-        void vote(const account_name voter, const std::string& proposition, const std::string& vote_value) {
+        void vote(const account_name voter, const std::string& proposition, const std::string& proposition_hash, const std::string& vote_value) {
             require_auth(voter);
             eosio_assert(proposition.size() < 256, "Proposition reference should be less than 256 characters long.");
+            eosio_assert(proposition_hash.size() < 128, "proposition_hash should be less than 128 characters long.");
             eosio_assert(value.size() < 128, "Vote value should be less than 128 characters long.");
         }
 };

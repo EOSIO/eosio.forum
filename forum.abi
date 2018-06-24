@@ -51,6 +51,9 @@
         "name": "proposition",
         "type": "string"
       },{
+        "name": "proposition_hash",
+        "type": "string"
+      },{
         "name": "vote_value",
         "type": "string"
       }
