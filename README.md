@@ -23,13 +23,18 @@ Use case #2 - Referendum
 With a well publicized upcoming referendum, Block Producers could ask
 the token holders to cast a vote on a given proposition.
 
-They could create a Google Doc with contents, have it translated, and
-assign it a single URL. This file could state the different
-`vote_value`s available (ex: `"yes"` and `"no"`).  All users would
-need to do is:
+They could create a document (Google Doc?  Markdown?), have it
+translated, and assign it a single URL. This file could state the
+different `vote_value`s available (ex: `"yes"` and `"no"`).  It could
+state the conditions or algorithm of the tally, as well as a voting
+period in terms of block heights. An optional `proposition_hash` can
+be put if the URL points to some potentially changing contents, to
+make sure it doesn't move during the voting period.
+
+All that users would need to do is:
 
 ```
-cleos push action eosio.forum vote `{"voter": "myvoteracct", "proposition": "https://googdocs.example.com/path/to/proposition/123512345", "vote_value": "yes"}`
+cleos push action eosio.forum vote `{"voter": "myvoteracct", "proposition": "https://googdocs.example.com/path/to/proposition/123512345", "proposition_hash": "", "vote_value": "yes"}`
 ```
 
 or the equivalent on any wallet or web UI.
