@@ -27,12 +27,19 @@ class forum : public eosio::contract {
                 eosio_assert(title.size() == 0, "If the post is a reply, there should not be a title.");
             }
         };
-        
+
         // @abi
         void remove(const account_name account, const uint32_t post_num) {
             require_auth(account);
             eosio_assert(post_num > 0, "Post number should be greater than 0 to remove.");
         }
+
+        // @abi
+        void vote(const account_name voter, const std::string& proposition, const std::string& vote_value) {
+            require_auth(voter);
+            eosio_assert(proposition.size() < 256, "Proposition reference should be less than 256 characters long.");
+            eosio_assert(value.size() < 128, "Vote value should be less than 128 characters long.");
+        }
 };
 
-EOSIO_ABI( forum, (post)(remove) )
+EOSIO_ABI( forum, (post)(remove)(vote) )

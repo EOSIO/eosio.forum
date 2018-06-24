@@ -32,17 +32,38 @@
       "name": "remove",
       "base": "",
       "fields": [{
-          "name": "account",
-          "type": "account_name"
-        },{
-          "name": "post_num",
-          "type": "uint32"
-        }
+        "name": "account",
+        "type": "account_name"
+      },{
+        "name": "post_num",
+        "type": "uint32"
+      }
+    }, {
+      "name": "vote",
+      "base": "",
+      "fields": [{
+        "name": "voter",
+        "type": "account_name"
+      },{
+        "name": "proposition",
+        "type": "string"
+      },{
+        "name": "vote_value",
+        "type": "string"
+      }
     }
   ],
   "actions": [{
       "name": "post",
       "type": "post",
+      "ricardian_contract": ""
+    },{
+      "name": "remove",
+      "type": "remove",
+      "ricardian_contract": ""
+    },{
+      "name": "vote",
+      "type": "vote",
       "ricardian_contract": ""
     }
   ],
