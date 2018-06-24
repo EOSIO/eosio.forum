@@ -8,8 +8,8 @@
           "name": "account",
           "type": "account_name"
         },{
-          "name": "post_num",
-          "type": "uint32"
+          "name": "post_uuid",
+          "type": "string"
         },{
           "name": "title",
           "type": "string"
@@ -21,8 +21,8 @@
           "type": "account_name"
         }
         },{
-          "name": "reply_to_post_num",
-          "type": "uint32"
+          "name": "reply_to_post_uuid",
+          "type": "string"
         },{
           "name": "certify",
           "type": "bool"
@@ -35,8 +35,8 @@
         "name": "account",
         "type": "account_name"
       },{
-        "name": "post_num",
-        "type": "uint32"
+        "name": "post_uuid",
+        "type": "string"
       }
     }, {
       "name": "vote",
