@@ -12,14 +12,14 @@ class forum : public eosio::contract {
         /// @param certify - under penalty of perjury the content of this post is true.
         // @abi
         void post(const account_name account, const std::string& post_uuid, const std::string& title, const std::string& content,
-                  const account_name reply_to_account, const std::string& reply_to_post_uuid, const bool certify) {
+                  const account_name reply_to_account, const std::string& reply_to_post_uuid, const bool certify, const std::string& json_metadata) {
             require_auth(account);
             eosio_assert(title.size() < 128, "title should be less than 128 characters long.");
 
             eosio_assert(content.size() > 0, "content should be more than 0 characters long.");
             eosio_assert(content.size() < 1024 * 1024 * 10, "content should be less than 10 KB long.");
 
-            eosio_assert(post_uuid.size() > 3, "post_uuid should be longer than 3 characters.");
+            eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 3 characters.");
             eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 
             if (reply_to_account == 0) {
@@ -27,15 +27,20 @@ class forum : public eosio::contract {
             } else {
                 eosio_assert(title.size() == 0, "If the post is a reply, there should not be a title.");
                 eosio_assert(is_account(reply_to_account), "reply_to_account must be a valid account.");
-                eosio_assert(reply_to_post_uuid.size() > 3, "reply_to_post_uuid should be longer than 3 characters.");
+                eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 3 characters.");
                 eosio_assert(reply_to_post_uuid.size() < 128, "reply_to_post_uuid should be shorter than 128 characters.");
+            }
+
+            if (json_metadata.size() != 0) {
+                eosio_assert(json_metadata[0] == '{', "json_metadata must be a JSON object (if specified).");
+                eosio_assert(json_metadata.size() < 8192, "json_metadata should be shorter than 8192 bytes.");
             }
         };
 
         // @abi
         void remove(const account_name account, const std::string& post_uuid) {
             require_auth(account);
-            eosio_assert(post_uuid.size() > 3, "Post UUID should be longer than 3 characters.");
+            eosio_assert(post_uuid.size() > 0, "Post UUID should be longer than 0 characters.");
             eosio_assert(post_uuid.size() < 128, "Post UUID should be shorter than 128 characters.");
         }
 

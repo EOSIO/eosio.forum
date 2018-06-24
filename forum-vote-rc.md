@@ -2,6 +2,6 @@
 
 ## Description
 
-The `{{ vote }}` action casts a vote for a {{ proposition }} referenced off-chain.  The proposition is a URL or a short name shared within a community calling for a vote.
+The intent of the `{{ vote }}` action is to cast a vote for {{ proposition }}, referencing an off-chain proposition.  This proposition is a URL or a short name shared within a community calling for a vote.
 
-I, {{ voter }} cast a vote with the value `{{ vote_value }}`, a value proposed by the referenced {{ proposition }} to manifest my assent.
+I, {{ voter }} cast a vote with the value `{{ vote_value }}`, a value referenced by {{ proposition }}, giving my assent, conscious of the impact of my vote.

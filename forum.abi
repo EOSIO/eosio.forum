@@ -26,6 +26,9 @@
         },{
           "name": "certify",
           "type": "bool"
+        },{
+          "name": "json_metadata",
+          "type": "string"
         }
       ]
     }, {
