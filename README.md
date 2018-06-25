@@ -17,24 +17,40 @@ anyone?). With the `json_metadata` field, applications are free to
 create filters, and conventions that make sense for them.
 
 
+Use case #2 - Voting
+--------------------
+
+Votes can be cast with the `vote` action. Say we are on a Zoom call,
+we want a quick vote from the BP accounts' authority, we can say in
+the zoom call: cast your vote with "go-no-go" as the proposal, or a
+given Google Doc ref, and use "yes" or "no" as the `vote_value`.
+
+We need very little tooling to do that, looking at 21 accounts that
+are currently in `eosio.prods`, and counting the results.
+
+This should allow for very quick decision making.
+
+
 Use case #2 - Referendum
 ------------------------
 
 With a well publicized upcoming referendum, Block Producers could ask
 the token holders to cast a vote on a given proposition.
 
-They could create a document (Google Doc?  Markdown?), have it
-translated, and assign it a single URL. This file could state the
-different `vote_value`s available (ex: `"yes"` and `"no"`).  It could
-state the conditions or algorithm of the tally, as well as a voting
-period in terms of block heights. An optional `proposition_hash` can
-be put if the URL points to some potentially changing contents, to
-make sure it doesn't move during the voting period.
+They could create a document as Markdown, have it translated, publish
+it to IPFS.
+
+This file could state the different `vote_value`s available (ex:
+`"yes"` and `"no"`).  It could state the conditions or algorithm of
+the tally, as well as a voting period in terms of block heights. For
+community wide referendums, we can use the `proposition_hash` and
+tools would hash the content of the proposition and put it there, so
+no content changes are possible (IPFS guarantees that too).
 
 All that users would need to do is:
 
 ```
-cleos push action eosio.forum vote `{"voter": "myvoteracct", "proposition": "https://googdocs.example.com/path/to/proposition/123512345", "proposition_hash": "", "vote_value": "yes"}`
+cleos push action eosio.forum vote `{"voter": "myvoteracct", "proposition": "/ipfs/Qm123123123123123123123123", "proposition_hash": "abcdef123123123123123123123213", "vote_value": "yes"}`
 ```
 
 or the equivalent on any wallet or web UI.
@@ -85,13 +101,26 @@ systems, to quickly review and apply such orders.
 
 
 
+Security
+========
+
+The `vote` and `post` actions, especially for BP accounts, would
+ideally be shielded by a custom permission with `updateauth` (`cleos
+set account permission`) and `linkauth` (`cleos set action
+permission`).
+
+See the github.com/eoscanada/eos-claimer setup for an example.
+
+
+
+
 LICENSE
--------
+=======
 
 MIT
 
 
 Credits
--------
+=======
 
 Original code and inspiration: Daniel Larimer
