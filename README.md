@@ -31,7 +31,7 @@ are currently in `eosio.prods`, and counting the results.
 This should allow for very quick decision making.
 
 
-Use case #2 - Referendum
+Use case #3 - Referendum
 ------------------------
 
 With a well publicized upcoming referendum, Block Producers could ask
@@ -66,7 +66,7 @@ the token holder community.
 
 
 
-Use case #3 - Block Producers alerts
+Use case #4 - Block Producers alerts
 ------------------------------------
 
 By following the changes to the producer schedule, one can listen only
@@ -81,7 +81,7 @@ Instrumentation would then be easy to trigger alerts. Example:
 4. Many levels of messages could exist, and could change during history.
 
 
-Use case #4 - ECAF Orders
+Use case #5 - ECAF Orders
 -------------------------
 
 ECAF-related (or other Arbitration forums) accounts could be watched
@@ -98,6 +98,15 @@ like a `transfer`, a `code` update or whatever is the order.
 
 Having the data on-chain would mean we can easily instrument our
 systems, to quickly review and apply such orders.
+
+
+Use case #6 - Identity validation
+---------------------------------
+
+Ask someone offline to send a given message, like "pickles and
+friends".  If they do send that message with an EOS account, you know
+you're talking to someone who has access to the BP account's `post`
+action.
 
 
 
