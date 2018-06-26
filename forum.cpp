@@ -35,7 +35,7 @@ class forum : public eosio::contract {
                 eosio_assert(json_metadata[0] == '{', "json_metadata must be a JSON object (if specified).");
                 eosio_assert(json_metadata.size() < 8192, "json_metadata should be shorter than 8192 bytes.");
             }
-        };
+        }
 
         // @abi
         void remove(const account_name account, const std::string& post_uuid) {
@@ -49,7 +49,8 @@ class forum : public eosio::contract {
             require_auth(voter);
             eosio_assert(proposition.size() < 256, "Proposition reference should be less than 256 characters long.");
             eosio_assert(proposition_hash.size() < 128, "proposition_hash should be less than 128 characters long.");
-            eosio_assert(value.size() < 128, "Vote value should be less than 128 characters long.");
+            eosio_assert(vote_value.size() > 0, "Vote value should be at least 1 character.");
+            eosio_assert(vote_value.size() < 128, "Vote value should be less than 128 characters long.");
         }
 };
 
