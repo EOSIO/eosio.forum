@@ -19,7 +19,6 @@
         },{
           "name": "reply_to_account",
           "type": "account_name"
-        }
         },{
           "name": "reply_to_post_uuid",
           "type": "string"
