@@ -4,6 +4,29 @@ A simple forum, messaging and voting system for EOS
 This forum stores nothing on chain, but only allows authenticated
 messages to go through.  Off-chain tools are needed to External tools are needed to
 
+
+Current rollout
+===============
+
+This contract is currently up on mainnet in the `eosforumtest`
+account.
+
+[eosc](https://github.com/eoscanada/eosc) has a client implementation
+to submit posts and votes (in unreleased `master`).
+
+You can post with:
+
+```
+cleos push action eosforumtest post '{"account": "YOURACCOUNT", "content": "hello world", "json_metadata": "{\"type\": \"chat\"}", "post_uuid":"somerandomstring"}' -p YOURACCOUNT@active
+```
+
+and vote with:
+
+```
+cleos push action eosforumtest vote '{"voter": "YOURACCOUNT", "proposition": "the proposition", "vote_value": "yes|no"}' -p YOURACCOUNT@active
+```
+
+
 Use case #1 - Simple chat
 -------------------------
 
