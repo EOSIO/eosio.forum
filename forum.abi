@@ -34,28 +34,30 @@
       "name": "remove",
       "base": "",
       "fields": [{
-        "name": "account",
-        "type": "account_name"
-      },{
-        "name": "post_uuid",
-        "type": "string"
-      }
+          "name": "account",
+          "type": "account_name"
+        },{
+          "name": "post_uuid",
+          "type": "string"
+        }
+      ]
     }, {
       "name": "vote",
       "base": "",
       "fields": [{
-        "name": "voter",
-        "type": "account_name"
-      },{
-        "name": "proposition",
-        "type": "string"
-      },{
-        "name": "proposition_hash",
-        "type": "string"
-      },{
-        "name": "vote_value",
-        "type": "string"
-      }
+          "name": "voter",
+          "type": "account_name"
+        },{
+          "name": "proposition",
+          "type": "string"
+        },{
+          "name": "proposition_hash",
+          "type": "string"
+        },{
+          "name": "vote_value",
+          "type": "string"
+        }
+      ]
     }
   ],
   "actions": [{
