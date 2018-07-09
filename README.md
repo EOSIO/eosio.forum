@@ -8,24 +8,92 @@ messages to go through.  Off-chain tools are needed to External tools are needed
 Current rollout
 ===============
 
-This contract is currently up on mainnet in the `eosforumtest`
-account.
+The latest version is not yet published.  A previous version lives on
+mainnet in the `eosforumtest` account.
 
-[eosc](https://github.com/eoscanada/eosc) has a client implementation
-to submit posts and votes (in unreleased `master`).
+Tools that integrated support for the `eosio.forum`:
+* [eosc](https://github.com/eoscanada/eosc) has a client
+  implementation to submit posts and votes (in unreleased `master`).
+* https://eostoolkit.io/forumpost allows you to post content through
+  `eosio.forum`.
+* MyEOSKit already has special casing for the `post` actions. See
+  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
 
-You can post with:
+
+Actions
+=======
+
+See the available operations in the ABI file.
+
+On a testnte with `eosio.forum` loaded, you can post with:
 
 ```
-cleos push action eosforumtest post '{"account": "YOURACCOUNT", "content": "hello world", "json_metadata": "{\"type\": \"chat\"}", "post_uuid":"somerandomstring"}' -p YOURACCOUNT@active
+cleos push action eosio.forum post '{"poster": "YOURACCOUNT", "post_uuid":"somerandomstring", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p YOURACCOUNT@active
 ```
 
 and vote with:
 
 ```
-cleos push action eosforumtest vote '{"voter": "YOURACCOUNT", "proposition": "the proposition", "vote_value": "yes|no"}' -p YOURACCOUNT@active
+cleos push action eosio.forum vote '{"voter": "YOURACCOUNT", "proposer": "proposer", "proposal_name": "theproposal", "vote": true, "vote_json": ""}' -p YOURACCOUNT@active
 ```
 
+
+Referendum structure proposals
+==============================
+
+`propose` a question to be voted with those parameters (`proposal_json` version #1)
+
+```
+proposer: eosio
+proposal_name: thequestion
+title: "EOSIO Referendum: The Question About ECAF and friends"  # An English string, to be shown in UIs
+proposal_json: '{
+  "content": "# Tally method\n\nThe tally method will be this and that, ... to the best of the active Block Producers's ability.\n\n# Voting period\n\nThe vote will stretch from the block it is submitted, and last for 1 million blocks.\n\n# Vote meaning\n\nA `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.\n\n# The question\n\nDo you wish ECAF to become Santa Claus ?"
+}'
+```
+
+The `vote` would look like:
+
+```
+voter: myaccount
+proposer: eosio
+proposal_name: thequestion
+vote: true
+vote_json: ''
+```
+
+---
+
+`proposal_json` structure #2:
+
+```
+proposal_json: '{
+  "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
+  "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
+  "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
+  "question": "Do you wish ECAF to become Santa Claus ?"
+}'
+```
+
+---
+
+`proposal_json` structure #3:
+
+```
+proposal_json: '{
+  "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
+  "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
+  "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
+  "question": {
+    "en": "Do you wish ECAF to become Santa Claus ?",
+    "fr": "Voulez-vous que l'ECAF devienne le père Noël ?"
+  }
+}'
+```
+
+
+Use cases
+=========
 
 Use case #1 - Simple chat
 -------------------------
@@ -141,7 +209,7 @@ ideally be shielded by a custom permission with `updateauth` (`cleos
 set account permission`) and `linkauth` (`cleos set action
 permission`).
 
-See the github.com/eoscanada/eos-claimer setup for an example.
+See https://github.com/eoscanada/eos-claimer setup for an example.
 
 
 
