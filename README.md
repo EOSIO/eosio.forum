@@ -5,37 +5,6 @@ This forum stores nothing on chain, but only allows authenticated
 messages to go through.  Off-chain tools are needed to External tools are needed to
 
 
-Current rollout
-===============
-
-The latest version is not yet published.  A previous version lives on
-mainnet in the `eosforumtest` account.
-
-Tools that integrated support for the `eosio.forum`:
-* [eosc](https://github.com/eoscanada/eosc) has a client
-  implementation to submit posts and votes (in unreleased `master`).
-* https://eostoolkit.io/forumpost allows you to post content through
-  `eosio.forum`.
-* MyEOSKit already has special casing for the `post` actions. See
-  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
-
-
-Actions
-=======
-
-See the available operations in the ABI file.
-
-On a testnte with `eosio.forum` loaded, you can post with:
-
-```
-cleos push action eosio.forum post '{"poster": "YOURACCOUNT", "post_uuid":"somerandomstring", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p YOURACCOUNT@active
-```
-
-and vote with:
-
-```
-cleos push action eosio.forum vote '{"voter": "YOURACCOUNT", "proposer": "proposer", "proposal_name": "theproposal", "vote": true, "vote_json": ""}' -p YOURACCOUNT@active
-```
 
 
 Referendum structure proposals
@@ -91,6 +60,39 @@ proposal_json: '{
 }'
 ```
 
+
+
+Current rollout
+===============
+
+The latest version is not yet published.  A previous version lives on
+mainnet in the `eosforumtest` account.
+
+Tools that integrated support for the `eosio.forum`:
+* [eosc](https://github.com/eoscanada/eosc) has a client
+  implementation to submit posts and votes (in unreleased `master`).
+* https://eostoolkit.io/forumpost allows you to post content through
+  `eosio.forum`.
+* MyEOSKit already has special casing for the `post` actions. See
+  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
+
+
+Actions
+=======
+
+See the available operations in the ABI file.
+
+On a testnte with `eosio.forum` loaded, you can post with:
+
+```
+cleos push action eosio.forum post '{"poster": "YOURACCOUNT", "post_uuid":"somerandomstring", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p YOURACCOUNT@active
+```
+
+and vote with:
+
+```
+cleos push action eosio.forum vote '{"voter": "YOURACCOUNT", "proposer": "proposer", "proposal_name": "theproposal", "vote": true, "vote_json": ""}' -p YOURACCOUNT@active
+```
 
 Use cases
 =========
