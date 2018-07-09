@@ -12,7 +12,7 @@ class forum : public eosio::contract {
         /// @param certify - under penalty of perjury the content of this post is true.
         // @abi
         void post(const account_name poster, const std::string& post_uuid, const std::string& content,
-                  const account_name reply_to_account, const std::string& reply_to_post_uuid, const bool certify,
+                  const account_name reply_to_poster, const std::string& reply_to_post_uuid, const bool certify,
                   const std::string& json_metadata) {
             require_auth(poster);
 
@@ -60,7 +60,7 @@ class forum : public eosio::contract {
 
             proptable.emplace( proposer, [&]( auto& prop ) {
                 prop.proposal_name = proposal_name;
-                prop.title = title
+                prop.title = title;
                 prop.proposal_json = proposal_json;
             });
         }
