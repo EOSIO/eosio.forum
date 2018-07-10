@@ -19,6 +19,7 @@ proposer: eosio
 proposal_name: thequestion
 title: "EOSIO Referendum: The Question About ECAF and friends"  # An English string, to be shown in UIs
 proposal_json: '{
+  "type": "bp-proposal-v1",
   "content": "# Tally method\n\nThe tally method will be this and that, ... to the best of the active Block Producers's ability.\n\n# Voting period\n\nThe vote will stretch from the block it is submitted, and last for 1 million blocks.\n\n# Vote meaning\n\nA `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.\n\n# The question\n\nDo you wish ECAF to become Santa Claus ?"
 }'
 ```
@@ -39,6 +40,7 @@ vote_json: ''
 
 ```
 proposal_json: '{
+  "type": "bp-proposal-v1",
   "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
   "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
   "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
@@ -52,6 +54,7 @@ proposal_json: '{
 
 ```
 proposal_json: '{
+  "type": "bp-proposal-v1",
   "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
   "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
   "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
