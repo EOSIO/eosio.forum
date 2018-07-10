@@ -1,8 +1,10 @@
 A simple forum, messaging and voting system for EOS
 ===================================================
 
-This forum stores nothing on chain, but only allows authenticated
-messages to go through.  Off-chain tools are needed to External tools are needed to
+This forum stores nothing in the in-RAM blockchain state. It allows authenticated
+messages to go through, where they are visible in the transaction history of the chain.
+Off-chain tools are needed to sort, display, aggregate and report on the outputs
+of the various calls supported by the Forum contract.
 
 
 
