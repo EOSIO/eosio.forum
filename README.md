@@ -30,6 +30,7 @@ The `vote` would look like:
 voter: myaccount
 proposer: eosio
 proposal_name: thequestion
+proposal_hash: acbdef112387abcefe123817238716acbdef12378912739812739acbd  # sha256 of "title + proposal_json" of proposal
 vote: true
 vote_json: ''
 ```
