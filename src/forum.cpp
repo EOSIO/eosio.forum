@@ -17,7 +17,7 @@ class forum : public eosio::contract {
             require_auth(poster);
 
             eosio_assert(content.size() > 0, "content should be more than 0 characters long.");
-            eosio_assert(content.size() < 1024 * 1024 * 10, "content should be less than 10 KB long.");
+            eosio_assert(content.size() < 1024 * 10, "content should be less than 10 KB long.");
 
             eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 3 characters.");
             eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
