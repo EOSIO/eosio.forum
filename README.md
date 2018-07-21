@@ -88,7 +88,7 @@ Actions
 
 See the available operations in the ABI file.
 
-On a testnte with `eosio.forum` loaded, you can post with:
+On a testnet with `eosio.forum` loaded, you can post with:
 
 ```
 cleos push action eosio.forum post '{"poster": "YOURACCOUNT", "post_uuid":"somerandomstring", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p YOURACCOUNT@active
