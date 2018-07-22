@@ -19,7 +19,7 @@ proposer: eosio
 proposal_name: thequestion
 title: "EOSIO Referendum: The Question About ECAF and friends"  # An English string, to be shown in UIs
 proposal_json: '{
-  "type": "bp-proposal-v1",
+  "type": "bps-proposal-v1",
   "content": "# Tally method\n\nThe tally method will be this and that, ... to the best of the active Block Producers's ability.\n\n# Voting period\n\nThe vote will stretch from the block it is submitted, and last for 1 million blocks.\n\n# Vote meaning\n\nA `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.\n\n# The question\n\nDo you wish ECAF to become Santa Claus ?"
 }'
 ```
@@ -35,13 +35,19 @@ vote: true
 vote_json: ''
 ```
 
+The rational behind `proposal_hash` is to confirm that the user was
+presented with the right content. The UI should hash the content
+displayed, in order to mitigate the risk of someone replacing its
+proposition with some different contents and gathering on-chain votes
+under false pretenses.
+
 ---
 
 `proposal_json` structure #2:
 
 ```
 proposal_json: '{
-  "type": "bp-proposal-v1",
+  "type": "bps-proposal-v2",
   "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
   "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
   "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
@@ -65,6 +71,77 @@ proposal_json: '{
   }
 }'
 ```
+
+
+Vocabulary for JSON structures
+------------------------------
+
+You can use any vocabulary you want when doing posts, proposals and
+votes. However, by following some simple guidelines, you can simplify
+your life and the life of those building UIs around these messages.
+
+For all `json` prefixed or suffixed fields in `propose`, `vote` and
+`post`, the `type` field determines a higher order protocol, and
+determines what other sibling fields will be required.
+
+### In a `propose`'s `proposal_json` field
+
+* `type` is a required field to distinguish protocol.  See types in this section below.
+
+* `question` means be the reference language question of a
+  proposition.
+
+* `content` is a Markdown document, detailing everything there is to know about the proposal (tally methods, time frame, references, required etc..)
+
+* `ends_at_block_height` is an integer representing the last block
+  height (inclusively) at which votes will be counted for this
+  proposition. Any votes cast after this end height will not be
+  counted.
+
+
+### In a `vote`'s `vote_json` field
+
+* `type` is optional. Defaults to `simple` if not present.
+
+The `proposal_hash` is not enforced by the contract but might be
+required by some proposals to consider a vote in the tally.
+
+#### `type` values
+
+* `simple` is the same as no `type` at all. The value of the vote is
+  the boolean `vote` field of the _action_.
+
+
+### In a `post`'s `json_metadata` field
+
+* `type` is a required field to distinguish protocol.  See below for
+  sample types
+
+The following fields attempt at standardizing the meaning of certain
+keys. If you specify your own `type`, you can define whatever you
+want.
+
+* `title` is a title that will be shown above a message, often used in
+  clickable headlines. Similar to a Reddit post's title.
+
+* `tags` is a list of strings, prefixed or not with a `#`.
+
+
+#### `type` values
+
+* `eos-bps-roll-call`, this is used within EOS Block Producers calls
+  to indicate they are present.
+
+* `eos-bps-emergency`, once **3** block producers send a message of
+  this type within an hour, all block producers can trigger a wake-up
+  alarm within 1h. Do not abuse this message to avoid alert
+  fatigue. Example: serious vulnerability requires mitigation, serious
+  network issues, immediate action required, etc..
+
+* `eos-bps-notify`, once **7** block producers send a message of this type
+  within an hour, other block producers can trigger a notification to
+  get their attention in the **next 24h**. Example: new ECAF order requires
+  attention.
 
 
 
