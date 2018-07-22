@@ -83,7 +83,7 @@
         {
           "name": "title",
           "type": "string"
-        }
+        },
         {
           "name": "proposal_json",
           "type": "string"
@@ -150,12 +150,12 @@
       "name": "propose",
       "type": "propose",
       "ricardian_contract": ""
-    }
+    },
     {
       "name": "unpropose",
       "type": "unpropose",
       "ricardian_contract": ""
-    }
+    },
     {
       "name": "vote",
       "type": "vote",
