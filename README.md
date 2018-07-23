@@ -143,6 +143,10 @@ want.
   get their attention in the **next 24h**. Example: new ECAF order requires
   attention.
 
+* `eos-bps-status`, the `content` being the last status for the
+  BP. UIs can display that in BP lists so we can have a clear view of
+  who has done what when we're applying blacklists, or applying fixes.
+
 
 
 Current rollout
