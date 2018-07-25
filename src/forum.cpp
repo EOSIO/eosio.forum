@@ -74,6 +74,36 @@ class forum : public eosio::contract {
         }
 
         // @abi
+        void status(const account_name account, const std::string& content) {
+            require_auth( account );
+
+            eosio_assert(content.size() < 256, "status should be less than 256 characters.");
+
+            statuses statustbl( _self, _self );
+
+            if (content.size() == 0) {
+                // remove
+                auto& st = statustbl.get( account, "no previous status entry for this account" );
+                statustbl.erase(st);
+            } else {
+                // add or update
+                auto itr = statustbl.find( account );
+                if ( itr == statustbl.end() ) {
+                    statustbl.emplace( account, [&]( auto& row ) {
+                        row.account = account;
+                        row.content = content;
+                        row.updated_at = now();
+                    });
+                } else {
+                  statustbl.modify( itr, 0, [&]( auto& row ) {
+                        row.content = content;
+                        row.updated_at = now();
+                    });
+                }
+            }
+        }
+
+        // @abi
         void vote(const account_name voter, const account_name proposer, const name proposal_name, const std::string& proposal_hash, bool vote, const std::string& vote_json) {
             require_auth(voter);
 
@@ -101,6 +131,16 @@ class forum : public eosio::contract {
             auto primary_key()const { return proposal_name.value; }
         };
         typedef eosio::multi_index<N(proposal),proposal> proposals;
+
+        struct statusrow {
+            account_name   account;
+            std::string    content;
+            time           updated_at;
+
+            auto primary_key() const { return account; }
+        };
+        typedef eosio::multi_index<N(status),statusrow> statuses;
+
 };
 
-EOSIO_ABI( forum, (post)(unpost)(propose)(unpropose)(vote) )
+EOSIO_ABI( forum, (post)(unpost)(propose)(unpropose)(vote)(status) )

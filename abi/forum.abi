@@ -108,6 +108,38 @@
       ]
     },
     {
+      "name": "status",
+      "base": "",
+      "fields": [
+        {
+          "name": "account",
+          "type": "account_name"
+        },
+        {
+          "name": "content",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "statusrow",
+      "base": "",
+      "fields": [
+        {
+          "name": "account",
+          "type": "account_name"
+        },
+        {
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "time_point_sec"
+        }
+      ]
+    },
+    {
       "name": "vote",
       "base": "",
       "fields": [
@@ -163,6 +195,11 @@
       "name": "vote",
       "type": "vote",
       "ricardian_contract": ""
+    },
+    {
+      "name": "status",
+      "type": "status",
+      "ricardian_contract": ""
     }
   ],
   "tables": [
@@ -171,6 +208,13 @@
       "type": "proposal",
       "index_type": "i64",
       "key_names" : ["proposal_name"],
+      "key_types" : ["name"]
+    },
+    {
+      "name": "status",
+      "type": "statusrow",
+      "index_type": "i64",
+      "key_names" : ["account"],
       "key_types" : ["name"]
     }
   ],
