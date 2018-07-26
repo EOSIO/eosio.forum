@@ -16,7 +16,7 @@ These are the available actions on this contract:
 * `propose` / `unpropose` - store a proposal on-chain, to be voted on by people
   * `vote` - works alongside `propose`, to cast a vote on a given proposal
 
-See the parameters for each [./abi/forum.abi](the ABI file).
+See the parameters for each [abi/forum.abi](the ABI file).
 
 
 Sample use
