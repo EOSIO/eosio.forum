@@ -86,15 +86,16 @@ class forum : public eosio::contract {
                 auto& st = statustbl.get( account, "no previous status entry for this account" );
                 statustbl.erase(st);
             } else {
-                // add or update
                 auto itr = statustbl.find( account );
                 if ( itr == statustbl.end() ) {
+                    // add
                     statustbl.emplace( account, [&]( auto& row ) {
                         row.account = account;
                         row.content = content;
                         row.updated_at = now();
                     });
                 } else {
+                  // update
                   statustbl.modify( itr, 0, [&]( auto& row ) {
                         row.content = content;
                         row.updated_at = now();
