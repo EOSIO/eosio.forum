@@ -75,24 +75,6 @@
       ]
     },
     {
-      "name": "proposal",
-      "base": "",
-      "fields": [
-        {
-          "name": "proposal_name",
-          "type": "name"
-        },
-        {
-          "name": "title",
-          "type": "string"
-        },
-        {
-          "name": "proposal_json",
-          "type": "string"
-        }
-      ]
-    },
-    {
       "name": "unpost",
       "base": "",
       "fields": [
@@ -121,24 +103,6 @@
       ]
     },
     {
-      "name": "statusrow",
-      "base": "",
-      "fields": [
-        {
-          "name": "account",
-          "type": "account_name"
-        },
-        {
-          "name": "content",
-          "type": "string"
-        },
-        {
-          "name": "updated_at",
-          "type": "time_point_sec"
-        }
-      ]
-    },
-    {
       "name": "vote",
       "base": "",
       "fields": [
@@ -160,14 +124,121 @@
         },
         {
           "name": "vote",
-          "type": "bool"
+          "type": "uint8"
         },
         {
           "name": "vote_json",
           "type": "string"
         }
       ]
-    }
+    },
+    {
+      "name": "unvote",
+      "base": "",
+      "fields": [
+        {
+          "name": "voter",
+          "type": "account_name"
+        },
+        {
+          "name": "proposer",
+          "type": "account_name"
+        },
+        {
+          "name": "proposal_name",
+          "type": "name"
+        },
+        {
+          "name": "proposal_hash",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "cleanvotes",
+      "base": "",
+      "fields": [
+        {
+          "name": "proposer",
+          "type": "account_name"
+        },
+        {
+          "name": "proposal_name",
+          "type": "name"
+        },
+        {
+          "name": "max_count",
+          "type": "uint64"
+        }
+      ]
+    },
+
+    {
+      "name": "proposal",
+      "base": "",
+      "fields": [
+        {
+          "name": "proposal_name",
+          "type": "name"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "proposal_json",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "statusrow",
+      "base": "",
+      "fields": [
+        {
+          "name": "account",
+          "type": "account_name"
+        },
+        {
+          "name": "content",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "time_point_sec"
+        }
+      ]
+    },
+    {
+      "name": "voterow",
+      "base": "",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint64"
+        },
+        {
+          "name": "proposal_name",
+          "type": "name"
+        },
+        {
+          "name": "voter",
+          "type": "account_name"
+        },
+        {
+          "name": "vote",
+          "type": "uint8"
+        },
+        {
+          "name": "vote_json",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "time_point_sec"
+        }
+      ]
+    },
   ],
   "actions": [
     {
@@ -196,6 +267,16 @@
       "ricardian_contract": ""
     },
     {
+      "name": "unvote",
+      "type": "unvote",
+      "ricardian_contract": ""
+    },
+    {
+      "name": "cleanvotes",
+      "type": "cleanvotes",
+      "ricardian_contract": ""
+    },
+    {
       "name": "status",
       "type": "status",
       "ricardian_contract": ""
@@ -215,6 +296,13 @@
       "index_type": "i64",
       "key_names" : ["account"],
       "key_types" : ["name"]
+    },
+    {
+      "name": "vote",
+      "type": "voterow",
+      "index_type": "i64",
+      "key_names" : ["id"],
+      "key_types" : ["i64"]
     }
   ],
   "clauses": [],

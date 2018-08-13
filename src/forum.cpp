@@ -1,147 +1,235 @@
-#include <eosiolib/eosio.hpp>
+#include "forum.hpp"
 
-#include <string>
+#define VALIDATE_JSON(Variable, MAX_SIZE)\
+validate_json(#Variable, Variable, MAX_SIZE)
 
-using eosio::name;
+EOSIO_ABI(forum, (post)(unpost)(propose)(unpropose)(vote)(unvote)(status))
 
-class forum : public eosio::contract {
-    public:
-        forum(account_name self)
-        :eosio::contract(self)
-        {}
-        /// @param certify - under penalty of perjury the content of this post is true.
-        // @abi
-        void post(const account_name poster, const std::string& post_uuid, const std::string& content,
-                  const account_name reply_to_poster, const std::string& reply_to_post_uuid, const bool certify,
-                  const std::string& json_metadata) {
-            require_auth(poster);
+// @abi
+void forum::post(
+    const account_name poster, 
+    const std::string& post_uuid, 
+    const std::string& content,
+    const account_name reply_to_poster, 
+    const std::string& reply_to_post_uuid, 
+    const bool certify,
+    const std::string& json_metadata
+) {
+    require_auth(poster);
 
-            eosio_assert(content.size() > 0, "content should be more than 0 characters long.");
-            eosio_assert(content.size() < 1024 * 10, "content should be less than 10 KB long.");
+    eosio_assert(content.size() > 0, "content should be more than 0 characters long.");
+    eosio_assert(content.size() < 1024 * 10, "content should be less than 10 KB long.");
 
-            eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 3 characters.");
-            eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
+    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 3 characters.");
+    eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 
-            if (reply_to_poster == 0) {
-              eosio_assert(reply_to_post_uuid.size() == 0, "If reply_to_poster is not set, reply_to_post_uuid should not be set.");
-            } else {
-                eosio_assert(is_account(reply_to_poster), "reply_to_poster must be a valid account.");
-                eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 3 characters.");
-                eosio_assert(reply_to_post_uuid.size() < 128, "reply_to_post_uuid should be shorter than 128 characters.");
-            }
+    if (reply_to_poster == 0) {
+        eosio_assert(reply_to_post_uuid.size() == 0, "If reply_to_poster is not set, reply_to_post_uuid should not be set.");
+    } else {
+        eosio_assert(is_account(reply_to_poster), "reply_to_poster must be a valid account.");
+        eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 3 characters.");
+        eosio_assert(reply_to_post_uuid.size() < 128, "reply_to_post_uuid should be shorter than 128 characters.");
+    }
 
-            if (json_metadata.size() != 0) {
-                eosio_assert(json_metadata[0] == '{', "json_metadata must be a JSON object (if specified).");
-                eosio_assert(json_metadata.size() < 8192, "json_metadata should be shorter than 8192 bytes.");
-            }
-        }
+    VALIDATE_JSON(json_metadata, 8192);
+}
 
-        // @abi
-        void unpost(const account_name poster, const std::string& post_uuid) {
-            require_auth(poster);
+// @abi
+void forum::unpost(const account_name poster, const std::string& post_uuid) {
+    require_auth(poster);
 
-            eosio_assert(post_uuid.size() > 0, "Post UUID should be longer than 0 characters.");
-            eosio_assert(post_uuid.size() < 128, "Post UUID should be shorter than 128 characters.");
-        }
+    eosio_assert(post_uuid.size() > 0, "Post UUID should be longer than 0 characters.");
+    eosio_assert(post_uuid.size() < 128, "Post UUID should be shorter than 128 characters.");
+}
 
-        // @abi
-        void propose(const account_name proposer, const name proposal_name, const std::string& title, const std::string& proposal_json) {
-            require_auth( proposer );
+// @abi
+void forum::propose(
+    const account_name proposer, 
+    const name proposal_name, 
+    const std::string& title,
+    const std::string& proposal_json
+) {
+    require_auth(proposer);
 
-            eosio_assert(title.size() < 1024, "title should be less than 1024 characters long.");
+    eosio_assert(proposal_name != N(proposal), "proposal name cannot be 'proposal'");
+    eosio_assert(proposal_name != N(status), "proposal name cannot be 'status'");
+    eosio_assert(title.size() < 1024, "title should be less than 1024 characters long.");
 
-            if (proposal_json.size() != 0) {
-                eosio_assert(proposal_json[0] == '{', "proposal_json must be a JSON object (if specified).");
-                eosio_assert(proposal_json.size() < 32768, "proposal_json should be shorter than 32768 bytes.");
-            }
+    VALIDATE_JSON(proposal_json, 32768);
 
-            proposals proptable( _self, proposer );
-            eosio_assert( proptable.find( proposal_name ) == proptable.end(), "proposal with the same name exists" );
+    proposals proposal_table(_self, proposer);
+    eosio_assert(proposal_table.find(proposal_name) == proposal_table.end(), "proposal with the same name exists");
 
-            proptable.emplace( proposer, [&]( auto& prop ) {
-                prop.proposal_name = proposal_name;
-                prop.title = title;
-                prop.proposal_json = proposal_json;
-            });
-        }
+    proposal_table.emplace(proposer, [&](auto& row) {
+        row.proposal_name = proposal_name;
+        row.title = title;
+        row.proposal_json = proposal_json;
+    });
+}
 
-        // @abi
-        void unpropose(const account_name proposer, const name proposal_name) {
-            require_auth( proposer );
-            proposals proptable( _self, proposer );
-            auto& prop = proptable.get( proposal_name, "proposal not found" );
-            proptable.erase(prop);
-        }
+// @abi
+void forum::unpropose(const account_name proposer, const name proposal_name) {
+    require_auth(proposer);
 
-        // @abi
-        void status(const account_name account, const std::string& content) {
-            require_auth( account );
+    proposals proposal_table(_self, proposer);
 
-            eosio_assert(content.size() < 256, "status should be less than 256 characters.");
+    auto& row = proposal_table.get(proposal_name, "proposal not found");
+    proposal_table.erase(row);
+}
 
-            statuses statustbl( _self, _self );
+// @abi
+void forum::status(const account_name account, const std::string& content) {
+    require_auth(account);
 
-            if (content.size() == 0) {
-                // remove
-                auto& st = statustbl.get( account, "no previous status entry for this account" );
-                statustbl.erase(st);
-            } else {
-                auto itr = statustbl.find( account );
-                if ( itr == statustbl.end() ) {
-                    // add
-                    statustbl.emplace( account, [&]( auto& row ) {
-                        row.account = account;
-                        row.content = content;
-                        row.updated_at = now();
-                    });
-                } else {
-                  // update
-                  statustbl.modify( itr, 0, [&]( auto& row ) {
-                        row.content = content;
-                        row.updated_at = now();
-                    });
-                }
-            }
-        }
+    eosio_assert(content.size() < 256, "status should be less than 256 characters.");
 
-        // @abi
-        void vote(const account_name voter, const account_name proposer, const name proposal_name, const std::string& proposal_hash, bool vote, const std::string& vote_json) {
-            require_auth(voter);
+    statuses status_table(_self, _self);
 
-            proposals proptable( _self, proposer );
-            auto& prop = proptable.get( proposal_name, "proposal_name does not exist under proposer's scope" );
-            eosio_assert( proptable.find( proposal_name ) != proptable.end(), "proposal_name does not exist until proposer's scope");
+    if (content.size() == 0) {
+        auto& row = status_table.get(account, "no previous status entry for this account");
+        status_table.erase(row);
+    } else {
+        update_status(status_table, account, [&](auto& row) { 
+            row.content = content;
+        });
+    }
+}
 
-            // The proposal_hash should be a hash of "title" + the JSON in the `proposal_json` field, appended directly.
-            // TODO: check that here.
-            eosio_assert(proposal_hash.size() < 128, "proposal_hash should be less than 128 characters long.");
+// @abi
+void forum::vote(
+    const account_name voter, 
+    const account_name proposer, 
+    const name proposal_name, 
+    const std::string& proposal_hash, 
+    uint8_t vote, 
+    const std::string& vote_json
+) {
+    require_auth(voter);
 
-            if (vote_json.size() != 0) {
-                eosio_assert(vote_json[0] == '{', "vote_json must be a JSON object (if specified).");
-                eosio_assert(vote_json.size() < 4096, "vote_json should be shorter than 4096 bytes.");
-            }
-        }
+    proposals proposal_table(_self, proposer);
+    proposal_table.get(proposal_name, "proposal_name does not exist under proposer's scope");
 
-    private:
+    // The proposal_hash should be a hash of "title" + the JSON in the `proposal_json` field, appended directly.
+    // TODO: check that here.
+    eosio_assert(proposal_hash.size() < 128, "proposal_hash should be less than 128 characters long.");
 
-        struct proposal {
-            name           proposal_name;
-            std::string    title;
-            std::string    proposal_json;
+    VALIDATE_JSON(vote_json, 8192);
 
-            auto primary_key()const { return proposal_name.value; }
-        };
-        typedef eosio::multi_index<N(proposal),proposal> proposals;
+    votes vote_table(_self, proposer);
+    update_vote(vote_table, proposal_name, voter, [&](auto& row) {
+        row.vote = vote;
+        row.vote_json = vote_json;
+    });
+}
 
-        struct statusrow {
-            account_name   account;
-            std::string    content;
-            time           updated_at;
+// @abi
+void forum::unvote(
+    const account_name voter,
+    const account_name proposer,
+    const name proposal_name,
+    const std::string& proposal_hash
+) {
+    require_auth(voter);
 
-            auto primary_key() const { return account; }
-        };
-        typedef eosio::multi_index<N(status),statusrow> statuses;
+    proposals proposal_table(_self, proposer);
+    proposal_table.get(proposal_name, "proposal_name does not exist under proposer's scope");
 
-};
+    // The proposal_hash should be a hash of "title" + the JSON in the `proposal_json` field, appended directly.
+    // TODO: check that here.
+    eosio_assert(proposal_hash.size() < 128, "proposal_hash should be less than 128 characters long.");
 
-EOSIO_ABI( forum, (post)(unpost)(propose)(unpropose)(vote)(status) )
+    votes vote_table(_self, proposer);
+    
+    auto index = vote_table.template get_index<N(votekey)>();
+    auto vote_key = compute_vote_key(proposal_name, voter);
+
+    auto itr = index.find(vote_key);
+    eosio_assert(itr != index.end(), "no vote exists for this proposal_name/voter pair");
+    
+    vote_table.erase(*itr);
+}
+
+void forum::cleanvotes(
+    const account_name proposer,
+    const name proposal_name,
+    uint64_t max_count
+) {
+    proposals proposal_table(_self, proposer);
+
+    auto itr = proposal_table.find(proposal_name);
+    eosio_assert(itr == proposal_table.end(), "proposal_name must not exist anymore");
+
+    votes vote_table(_self, proposer);
+    auto index = vote_table.template get_index<N(votekey)>();
+
+    auto vote_key_lower_bound = compute_vote_key(proposal_name, 0x0000000000000000);
+    auto vote_key_upper_bound = compute_vote_key(proposal_name, 0xFFFFFFFFFFFFFFFF);
+
+    auto lower_itr = index.lower_bound(vote_key_lower_bound);
+    auto upper_itr = index.upper_bound(vote_key_upper_bound);
+
+    uint64_t count = 0;
+    while (count < max_count && lower_itr != upper_itr) {
+        lower_itr = index.erase(lower_itr);
+        count++;
+    }
+}
+
+/// Helpers
+
+void forum::update_status(
+    statuses& status_table,
+    const account_name account,
+    const function<void(statusrow&)> updater
+) {
+    auto itr = status_table.find(account);
+    if (itr == status_table.end()) {
+        status_table.emplace(account, [&](auto& row) {
+            row.account = account;
+            row.updated_at = now();
+            updater(row);
+        });
+    } else {
+        status_table.modify(itr, account, [&](auto& row) { 
+            row.updated_at = now();
+            updater(row); 
+        });
+    }
+}
+
+void forum::update_vote(
+    votes& vote_table,
+    const name proposal_name, 
+    const account_name voter, 
+    const function<void(voterow&)> updater
+) {
+    auto index = vote_table.template get_index<N(votekey)>();
+    auto vote_key = compute_vote_key(proposal_name, voter);
+
+    auto itr = index.find(vote_key);
+    if (itr == index.end()) {
+        vote_table.emplace(voter, [&](auto& row) {
+            row.id = vote_table.available_primary_key();
+            row.proposal_name = proposal_name;
+            row.voter = voter;
+            row.updated_at = now();
+            updater(row);
+        });
+    } else {
+        index.modify(itr, voter, [&](auto& row) { 
+            row.updated_at = now();
+            updater(row); 
+        });
+    }
+}
+
+void forum::validate_json(const string& field, const string& payload, size_t max_size) {
+    if (payload.size() <= 0) return;
+
+    string not_json_message = field + " must be a JSON object (if specified).";
+    eosio_assert(payload[0] == '{', not_json_message.c_str());
+
+    string over_size_message = field + " should be shorter than " + std::to_string(max_size) + " bytes.";
+    eosio_assert(payload.size() < max_size, over_size_message.c_str());
+}
+
