@@ -51,8 +51,6 @@ void forum::propose(
 ) {
     require_auth(proposer);
 
-    eosio_assert(proposal_name != N(proposal), "proposal name cannot be 'proposal'");
-    eosio_assert(proposal_name != N(status), "proposal name cannot be 'status'");
     eosio_assert(title.size() < 1024, "title should be less than 1024 characters long.");
 
     VALIDATE_JSON(proposal_json, 32768);
@@ -165,9 +163,6 @@ void forum::cleanvotes(
     auto vote_key_lower_bound = compute_vote_key(proposal_name, 0x0000000000000000);
     auto vote_key_upper_bound = compute_vote_key(proposal_name, 0xFFFFFFFFFFFFFFFF);
 
-    eosio::print("Vote key lower", vote_key_lower_bound, "\n");
-    eosio::print("Vote key upper", vote_key_upper_bound, "\n");
-
     auto lower_itr = index.lower_bound(vote_key_lower_bound);
     auto upper_itr = index.upper_bound(vote_key_upper_bound);
 
@@ -208,8 +203,6 @@ void forum::update_vote(
 ) {
     auto index = vote_table.template get_index<N(votekey)>();
     auto vote_key = compute_vote_key(proposal_name, voter);
-
-    eosio::print("Vote key ", vote_key, "\n");
 
     auto itr = index.find(vote_key);
     if (itr == index.end()) {
