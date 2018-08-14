@@ -3,7 +3,7 @@
 #define VALIDATE_JSON(Variable, MAX_SIZE)\
 validate_json(#Variable, Variable, MAX_SIZE)
 
-EOSIO_ABI(forum, (post)(unpost)(propose)(unpropose)(vote)(unvote)(status))
+EOSIO_ABI(forum, (post)(unpost)(propose)(unpropose)(vote)(unvote)(cleanvotes)(status))
 
 // @abi
 void forum::post(
@@ -165,6 +165,9 @@ void forum::cleanvotes(
     auto vote_key_lower_bound = compute_vote_key(proposal_name, 0x0000000000000000);
     auto vote_key_upper_bound = compute_vote_key(proposal_name, 0xFFFFFFFFFFFFFFFF);
 
+    eosio::print("Vote key lower", vote_key_lower_bound, "\n");
+    eosio::print("Vote key upper", vote_key_upper_bound, "\n");
+
     auto lower_itr = index.lower_bound(vote_key_lower_bound);
     auto upper_itr = index.upper_bound(vote_key_upper_bound);
 
@@ -205,6 +208,8 @@ void forum::update_vote(
 ) {
     auto index = vote_table.template get_index<N(votekey)>();
     auto vote_key = compute_vote_key(proposal_name, voter);
+
+    eosio::print("Vote key ", vote_key, "\n");
 
     auto itr = index.find(vote_key);
     if (itr == index.end()) {
