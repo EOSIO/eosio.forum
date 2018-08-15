@@ -122,5 +122,11 @@ class forum : public eosio::contract {
             const function<void(voterow&)> updater
         );
 
-        void validate_json(const string& field, const string& payload, size_t max_size);
+        // Do not use directly, use the VALIDATE_JSON macro instead!
+        void validate_json(
+            const string& payload, 
+            size_t max_size, 
+            const char* not_object_message,
+            const char* over_size_message
+        );
 };

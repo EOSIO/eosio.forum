@@ -1,8 +1,11 @@
 export CONTRACT=eosioforum
 
-boot() {
-    return 0
-}
+export CHARS_50="abcdefhijklmnopqrstuwxyabcdefhijklmnopqrstuwxy0123"
+export CHARS_250="${CHARS_50}${CHARS_50}${CHARS_50}${CHARS_50}${CHARS_50}"
+export CHARS_1250="${CHARS_250}${CHARS_250}${CHARS_250}${CHARS_250}${CHARS_250}"
+export CHARS_6250="${CHARS_1250}${CHARS_1250}${CHARS_1250}${CHARS_1250}${CHARS_1250}"
+export CHARS_13000="${CHARS_6250}${CHARS_6250}"
+export CHARS_37500="${CHARS_13000}${CHARS_13000}${CHARS_6250}"
 
 print_config() {
     echo "Config"
@@ -31,18 +34,18 @@ action_ko() {
 
     exit_code=$?
     if [[ $exit_code == 0 ]]; then
-        error "failure (command succeed, expecting failure)"
-        println $output
+        error "('$4' KO) failure (action succeed but expected failure)"
+        [[ $NO_OUTPUT != "y" ]] && println $output
         exit $exit_code
     fi
 
     if [[ ! $output =~ "$4" ]]; then
-        error "failure (message not matching '$4')"
+        error "('$4' KO) failure (message not matching)"
         println $output
         exit 1
     fi
 
-    success "success"
+    success "('$4' OK) success"
 }
 
 # usage: table_row <table> <scope> [<pattern> ...]

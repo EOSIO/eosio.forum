@@ -1,7 +1,12 @@
 #include "forum.hpp"
 
 #define VALIDATE_JSON(Variable, MAX_SIZE)\
-validate_json(#Variable, Variable, MAX_SIZE)
+::forum::validate_json(\
+    Variable,\
+    MAX_SIZE,\
+    #Variable " must be a JSON object (if specified).",\
+    #Variable " should be shorter than " #MAX_SIZE " bytes."\
+)
 
 EOSIO_ABI(forum, (post)(unpost)(propose)(unpropose)(vote)(unvote)(cleanvotes)(status))
 
@@ -17,17 +22,17 @@ void forum::post(
 ) {
     require_auth(poster);
 
-    eosio_assert(content.size() > 0, "content should be more than 0 characters long.");
-    eosio_assert(content.size() < 1024 * 10, "content should be less than 10 KB long.");
+    eosio_assert(content.size() > 0, "content should be longer than 0 character.");
+    eosio_assert(content.size() < 1024 * 10, "content should be less than 10 KB.");
 
-    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 3 characters.");
+    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 character.");
     eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 
     if (reply_to_poster == 0) {
         eosio_assert(reply_to_post_uuid.size() == 0, "If reply_to_poster is not set, reply_to_post_uuid should not be set.");
     } else {
         eosio_assert(is_account(reply_to_poster), "reply_to_poster must be a valid account.");
-        eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 3 characters.");
+        eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 0 character.");
         eosio_assert(reply_to_post_uuid.size() < 128, "reply_to_post_uuid should be shorter than 128 characters.");
     }
 
@@ -38,8 +43,8 @@ void forum::post(
 void forum::unpost(const account_name poster, const std::string& post_uuid) {
     require_auth(poster);
 
-    eosio_assert(post_uuid.size() > 0, "Post UUID should be longer than 0 characters.");
-    eosio_assert(post_uuid.size() < 128, "Post UUID should be shorter than 128 characters.");
+    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 character.");
+    eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 }
 
 // @abi
@@ -79,12 +84,12 @@ void forum::unpropose(const account_name proposer, const name proposal_name) {
 void forum::status(const account_name account, const std::string& content) {
     require_auth(account);
 
-    eosio_assert(content.size() < 256, "status should be less than 256 characters.");
+    eosio_assert(content.size() < 256, "content should be less than 256 characters.");
 
     statuses status_table(_self, _self);
 
     if (content.size() == 0) {
-        auto& row = status_table.get(account, "no previous status entry for this account");
+        auto& row = status_table.get(account, "no previous status entry for this account.");
         status_table.erase(row);
     } else {
         update_status(status_table, account, [&](auto& row) { 
@@ -202,7 +207,13 @@ void forum::update_vote(
     const function<void(voterow&)> updater
 ) {
     auto index = vote_table.template get_index<N(votekey)>();
+
+    eosio::print("Proposal name ", proposal_name, " ", proposal_name.value, "\n");
+    eosio::print("Voter ", voter, "\n");
+
     auto vote_key = compute_vote_key(proposal_name, voter);
+
+    eosio::print("Voter key ", vote_key, "\n");
 
     auto itr = index.find(vote_key);
     if (itr == index.end()) {
@@ -221,13 +232,16 @@ void forum::update_vote(
     }
 }
 
-void forum::validate_json(const string& field, const string& payload, size_t max_size) {
+// Do not use directly, use the VALIDATE_JSON macro instead!
+void forum::validate_json(
+    const string& payload, 
+    size_t max_size, 
+    const char* not_object_message,
+    const char* over_size_message
+) {
     if (payload.size() <= 0) return;
 
-    string not_json_message = field + " must be a JSON object (if specified).";
-    eosio_assert(payload[0] == '{', not_json_message.c_str());
-
-    string over_size_message = field + " should be shorter than " + std::to_string(max_size) + " bytes.";
-    eosio_assert(payload.size() < max_size, over_size_message.c_str());
+    eosio_assert(payload[0] == '{', not_object_message);
+    eosio_assert(payload.size() < max_size, over_size_message);
 }
 
