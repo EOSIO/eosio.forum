@@ -55,6 +55,13 @@ This folder contains a bunch of tests for this contract.
         creator: eosio
         new_account: voter2
         pubkey: EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP
+
+    - op: system.newaccount
+    label: Create zzzzzzzzzzzz account for eosioforum
+    data:
+        creator: eosio
+        new_account: zzzzzzzzzzzz
+        pubkey: EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP
     ```
 
  * Import the following private key in your wallet: `5JpjqdhVCQTegTjrLtCSXHce7c9M8w7EXYZS7xC13jVFF4Phcrx` (this is the private key for the public one `EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP`, of course, you can use your own pair).

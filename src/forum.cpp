@@ -103,7 +103,7 @@ void forum::vote(
     const account_name voter, 
     const account_name proposer, 
     const name proposal_name, 
-    const std::string& proposal_hash, 
+    const std::string& proposal_hash,
     uint8_t vote, 
     const std::string& vote_json
 ) {
