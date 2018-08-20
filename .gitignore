@@ -6,3 +6,4 @@ Makefile
 scripts/voter_key
 
 CMakeFiles/
+.vscode
