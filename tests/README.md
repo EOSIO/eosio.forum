@@ -1,6 +1,6 @@
 ## Tests
 
-This folder contains a bunch of tests for this contract. 
+This folder contains a bunch of tests for this contract.
 
 ### Quick Start
 

@@ -28,15 +28,15 @@ int main(int argument_count, const char** arguments) {
 
     auto voter_key = (((uint128_t) proposal_name_value) << 64 | (uint128_t) voter_valuer);
 
-    cout << "Proposal name '" 
-         << proposal_name 
-         << "' (dec " << proposal_name_value 
+    cout << "Proposal name '"
+         << proposal_name
+         << "' (dec " << proposal_name_value
          << ", hex " << to_hex(proposal_name_value)
          << ")" << endl;
 
-    cout << "Voter '" 
-         << voter 
-         << "' (dec " << voter_valuer 
+    cout << "Voter '"
+         << voter
+         << "' (dec " << voter_valuer
          << ", hex " << to_hex(voter_valuer)
          << ")" << endl;
 
@@ -46,7 +46,7 @@ int main(int argument_count, const char** arguments) {
 
     string voter_key_big_endian_hex = to_upper(voter_key_string);
     string voter_key_little_endian_hex = hex_string_to_little_endian(voter_key_big_endian_hex);
-    cout << "Voter key" << endl 
+    cout << "Voter key" << endl
          << " Big endian: 0x" << voter_key_big_endian_hex << endl
          << " Little endian: 0x" << voter_key_little_endian_hex << endl;
 
@@ -61,7 +61,7 @@ static string to_hex(uint64_t value) {
     std::stringstream stream;
     stream << "0x" << std::hex << value;
     auto hex_string = stream.str();
-    
+
     return to_upper(hex_string);
 }
 
@@ -76,11 +76,11 @@ static string hex_string_to_little_endian(const string& value) {
     }
 
     for (int i = value.size() - offset; i > 0; i -= 2) {
-        stream << value[i - 2] << value[i - 1]; 
+        stream << value[i - 2] << value[i - 1];
     }
-    
+
     auto hex_string = stream.str();
-    
+
     return to_upper(hex_string);
 }
 
@@ -88,7 +88,7 @@ static string to_upper(string& value) {
     std::transform(value.begin(), value.end(), value.begin(), ::toupper);
     return value;
 }
-    
+
 static char char_to_symbol(char c) {
     if (c >= 'a' && c <= 'z') return (c - 'a') + 6;
     if (c >= '1' && c <= '5') return (c - '1') + 1;
