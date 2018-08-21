@@ -1,9 +1,16 @@
-CMakeCache.txt
-cmake_install.cmake
-compile_commands.json
-eosc-vault.json
-Makefile
+# Build
+build*/
 scripts/voter_key
 
+# CMake
+CMakeCache.txt
 CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# eosc
+eosc-vault.json
+
+# VSCode
 .vscode
