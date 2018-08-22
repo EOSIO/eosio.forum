@@ -207,13 +207,7 @@ void forum::update_vote(
     const function<void(voterow&)> updater
 ) {
     auto index = vote_table.template get_index<N(votekey)>();
-
-    eosio::print("Proposal name ", proposal_name, " ", proposal_name.value, "\n");
-    eosio::print("Voter ", voter, "\n");
-
     auto vote_key = compute_vote_key(proposal_name, voter);
-
-    eosio::print("Voter key ", vote_key, "\n");
 
     auto itr = index.find(vote_key);
     if (itr == index.end()) {
