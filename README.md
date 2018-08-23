@@ -9,6 +9,37 @@ Off-chain tools are needed to sort, display, aggregate and report on the outputs
 of the various calls supported by the Forum contract.
 
 
+
+New ideas, August 23rd 2018
+---------------------------
+
+Matthieu Vachon, François Proulx and Alexandre Bourget are proposing these changes alongside an upcoming implementation:
+
+1. `propose` ->
+   * add an `expires_at` datetime field in table, AND input param
+   * assert `expires_at` isn't more than in 6 months (guarantees freeing of RAM for its users)
+   * add a `created_at` datetime field (future proofing)
+   * already checks if `proposal_name` doesn't exist
+
+1. Rename `unpropose` -> `expire`
+   * sets `expires_at` to `now()` ONLY if not already expired (can't push expiration to later)
+
+1. `vote` cannot vote for an expired proposal
+   * get rid of `proposal_hash`, from both table and input params
+   * now that the proposal can't change, there's no need to sync the vote with the contents of the proposal
+
+1. Rename `cleanvotes` -> `clnproposal`
+
+1. `clnproposal`
+   * asserts that we are 3 days after the proposal's `expires_at`, otherwise fail (no clean-up possible, keeping votes and proposal on chain for review and download and whatever)
+   * allows clean-up after `expires_at` is passed.
+   * `expire` skips auth checks if `expires_at` is passed, meaning anyone can expire it at that point
+   * once all votes have been cleaned, delete the proposal itself
+
+The rest of this README still reflects the current codebase, not the
+implementation of the ideas above.
+
+
 Actions
 =======
 
