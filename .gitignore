@@ -9,6 +9,9 @@ cmake_install.cmake
 compile_commands.json
 Makefile
 
+# Env
+.envrc
+
 # eosc
 eosc-vault.json
 
