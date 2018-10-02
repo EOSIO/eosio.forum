@@ -118,7 +118,7 @@ void forum::clnproposal(const name proposal_name, uint64_t max_count) {
 
     auto itr = proposal_table.find(proposal_name);
     eosio_assert(itr == proposal_table.end() || itr->can_be_cleaned_up(),
-                 "proposal must not exist or be expired since at least 3 days prior clean up.");
+                 "proposal must not exist or be expired for at least 3 days prior to running clnproposal.");
 
     votes vote_table(_self, _self);
     auto index = vote_table.template get_index<N(byproposal)>();
