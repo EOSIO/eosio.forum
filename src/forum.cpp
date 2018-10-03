@@ -102,13 +102,13 @@ void forum::unvote(const account_name voter, const name proposal_name) {
 }
 
 /**
- * This method does **not** require any authorization, here the reasoning for that.
+ * This method does **not** require any authorization, here is the reasoning for that.
  *
- * The method only allow anyone to clean a proposal if the proposal is either expired or does
- * not exist anymore. This exact case can only happen either by itself (the proposal as reach
- * its expiration time) or by the a proposer action (`expire`).
+ * This method allows anyone to clean a proposal if the proposal is either expired or does
+ * not exist anymore. This exact case can only happen either by itself (the proposal has reached
+ * its expiration time) or by the a proposer action (`expire`). In either case, 3 days must elapse before calling `clnproposal`.
  *
- * In all cases, it's ok to let anyone clean the votes since there is no more "use"
+ * In all cases it's ok to let anyone clean the votes since there is no more "use"
  * for the proposal nor the votes.
  *
  * @abi
@@ -153,17 +153,17 @@ void forum::post(
 ) {
     require_auth(poster);
 
-    eosio_assert(content.size() > 0, "content should be longer than 0 character.");
+    eosio_assert(content.size() > 0, "content should be longer than 0 characters.");
     eosio_assert(content.size() < 1024 * 10, "content should be less than 10 KB.");
 
-    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 character.");
+    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 characters.");
     eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 
     if (reply_to_poster == 0) {
         eosio_assert(reply_to_post_uuid.size() == 0, "If reply_to_poster is not set, reply_to_post_uuid should not be set.");
     } else {
         eosio_assert(is_account(reply_to_poster), "reply_to_poster must be a valid account.");
-        eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 0 character.");
+        eosio_assert(reply_to_post_uuid.size() > 0, "reply_to_post_uuid should be longer than 0 characters.");
         eosio_assert(reply_to_post_uuid.size() < 128, "reply_to_post_uuid should be shorter than 128 characters.");
     }
 
@@ -174,7 +174,7 @@ void forum::post(
 void forum::unpost(const account_name poster, const string& post_uuid) {
     require_auth(poster);
 
-    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 character.");
+    eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 characters.");
     eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 }
 
