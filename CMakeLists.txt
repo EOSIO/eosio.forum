@@ -2,13 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 project(eosio.forum VERSION 1.0.0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(EOSIO_WASMSDK_DEPENDENCY "1.1")
+set(EOSIO_CDT_DEPENDENCY "1.2")
 
-if(EOSIO_WASMSDK_ROOT STREQUAL "" OR NOT EOSIO_WASMSDK_ROOT)
-   set(EOSIO_WASMSDK_ROOT "/usr/local/eosio.wasmsdk")
+if(EOSIO_CDT_ROOT STREQUAL "" OR NOT EOSIO_CDT_ROOT)
+   set(EOSIO_CDT_ROOT "/usr/local/eosio.cdt")
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${EOSIO_WASMSDK_ROOT}/lib/cmake)
+list(APPEND CMAKE_MODULE_PATH ${EOSIO_CDT_ROOT}/lib/cmake)
 
 include(EosioWasmToolchain)
 
