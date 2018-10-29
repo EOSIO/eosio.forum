@@ -11,7 +11,7 @@ action_ko post poster2@active \
 
 action_ko post poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"1\", \"content\":\"\", \"reply_to_poster\":\"poster2\", \"reply_to_post_uuid\":\"b\", \"certify\": true, \"json_metadata\":\"\"}" \
-'content should be longer than 0 character.'
+'content should be longer than 0 characters.'
 
 action_ko post poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"1\", \"content\":\"${CHARS_13000}\", \"reply_to_poster\":\"poster2\", \"reply_to_post_uuid\":\"b\", \"certify\": true, \"json_metadata\":\"\"}" \
@@ -19,7 +19,7 @@ action_ko post poster1@active \
 
 action_ko post poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"\", \"content\":\"a\", \"reply_to_poster\":\"poster2\", \"reply_to_post_uuid\":\"b\", \"certify\": true, \"json_metadata\":\"\"}" \
-'post_uuid should be longer than 0 character.'
+'post_uuid should be longer than 0 characters.'
 
 action_ko post poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"${CHARS_250}\", \"content\":\"a\", \"reply_to_poster\":\"poster2\", \"reply_to_post_uuid\":\"b\", \"certify\": true, \"json_metadata\":\"\"}" \
@@ -31,7 +31,7 @@ action_ko post poster1@active \
 
 action_ko post poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"a\", \"content\":\"a\", \"reply_to_poster\":\"poster2\", \"reply_to_post_uuid\":\"\", \"certify\": true, \"json_metadata\":\"\"}" \
-'reply_to_post_uuid should be longer than 0 character.'
+'reply_to_post_uuid should be longer than 0 characters.'
 
 action_ko post poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"a\", \"content\":\"a\", \"reply_to_poster\":\"poster2\", \"reply_to_post_uuid\":\"${CHARS_250}\", \"certify\": true, \"json_metadata\":\"\"}" \

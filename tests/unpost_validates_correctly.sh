@@ -8,7 +8,7 @@ action_ko unpost poster2@active \
 
 action_ko unpost poster1@active \
 '{"poster":"poster1", "post_uuid":""}' \
-'post_uuid should be longer than 0 character.'
+'post_uuid should be longer than 0 characters.'
 
 action_ko unpost poster1@active \
 "{\"poster\":\"poster1\", \"post_uuid\":\"${CHARS_250}\"}" \

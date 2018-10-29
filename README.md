@@ -1,199 +1,580 @@
-A simple forum, messaging and voting system for EOS
-===================================================
+## A simple forum, messaging and voting system for EOS
 
 [点击查看中文版](./README-cn.md)
 
-This forum stores nothing in the in-RAM blockchain state. It allows authenticated
-messages to go through, where they are visible in the transaction history of the chain.
-Off-chain tools are needed to sort, display, aggregate and report on the outputs
-of the various calls supported by the Forum contract.
+The purpose of this contract is to support the EOS Referendum system
+by storing proposals and their related votes in-RAM in the blockchain's state.
 
+It's also possible to created related posts and statuses but they are however
+not stored in-RAM in the blockchain's state. It allows authenticated messages
+to go through, where they are visible in the transaction history of the chain.
+Off-chain tools are needed to sort, display, aggregate and report on the
+outputs of the post and status actions.
 
+### Lifecycle
 
-New ideas, August 23rd 2018
----------------------------
+The `proposal` action is first called providing the proposer's account, proposal's name (its
+id among all other proposals), proposal's title, a JSON string for extra metadata
+(specification not defined yet) that can be left empty for now and a expiration date
+(must be no later than 6 months in the future).
 
-Matthieu Vachon, François Proulx and Alexandre Bourget are proposing these changes alongside an upcoming implementation:
+Once the proposal has been created, people can start to vote on it via the `vote` action.
+The vote action is called using the voter's account, proposal's name, vote's value (`0` for
+negative vote and `1` for a positive vote) and a JSON string for extra metadata
+(specification not defined yet), can be left empty for now.
 
-1. `propose` ->
-   * add an `expires_at` datetime field in table, AND input param
-   * assert `expires_at` isn't more than in 6 months (guarantees freeing of RAM for its users)
-   * add a `created_at` datetime field (future proofing)
-   * already checks if `proposal_name` doesn't exist
+A vote overwrites any previous value if present. That means that if you voted initially with a
+vote value of `0` (negative vote) and you perform a second `vote` action on the same proposal
+this time with a value of `1` (positive vote), your current vote for the proposal is now `1`.
 
-1. Rename `unpropose` -> `expire`
-   * sets `expires_at` to `now()` ONLY if not already expired (can't push expiration to later)
+There is no decay once you have voted. Once you vote, it does not change nor removed until
+you either `unvote` or the proposal is cleaned up.
 
-1. `vote` cannot vote for an expired proposal
-   * get rid of `proposal_hash`, from both table and input params
-   * now that the proposal can't change, there's no need to sync the vote with the contents of the proposal
+Once a vote has been casted, a user can remove its vote via the `unvote` action.
+The `unvote` action is called using the voter's account and proposal's name. An `unvote`
+action completely remove your vote not making it count anymore in the proposal and
+clears the RAM usage associated with your vote.
 
-1. Rename `cleanvotes` -> `clnproposal`
+While a proposal is still active, a proposer can decide to manually expires it
+by calling `expire` action which receives as its only argument the `proposal_name`.
+This makes the proposal expired right now instead of waiting for its expiration date
+to be reached.
 
-1. `clnproposal`
-   * asserts that we are 3 days after the proposal's `expires_at`, otherwise fail (no clean-up possible, keeping votes and proposal on chain for review and download and whatever)
-   * allows clean-up after `expires_at` is passed.
-   * `expire` skips auth checks if `expires_at` is passed, meaning anyone can expire it at that point
-   * once all votes have been cleaned, delete the proposal itself
+Once a proposal is expired (be it manually or automatically if it passed its expiration date), the
+proposal enters a 3 days freeze period. Within this freeze period, the proposal is mostly locked
+and nothing can happen on it (no vote changes, no vote removal (`unvote`) and no clean up).
 
-The rest of this README still reflects the current codebase, not the
-implementation of the ideas above.
+Once a proposal has ended its freeze period, it's now possible to clean it via the `clnproposal` action.
+The `clnproposal` action receives the `proposal_name` and a `max_count` value. Clean is done in
+batch, each batch removing an amount of votes on the proposal (received via `max_count` variable).
+Once all votes are removed on a proposal, the proposal itself is removed.
 
+The clean proposal effectively reclaims all RAM consumed for votes and for the proposal itself. The
+RAM is thus given back to voters (for their votes) and to the proposer (for the proposal).
 
-Actions
-=======
+The clean proposal can be called by anybody, there is no restrictions here. It's ok since only
+expired proposals not within their freeze period can be cleaned up. Thus, no issues can
+arise by cleaning proposals.
 
-These are the available actions on this contract:
-* `post` / `unpost` - post some content through the blockchain, nothing is stored on-chain
-* `status` - post a small status line (like Twitter), stored on chain for quick retrieval
-* `propose` / `unpropose` - store a proposal on-chain, to be voted on by people
-  * `vote` - works alongside `propose`, to cast a vote on a given proposal
+### Development
 
-See the parameters for each [abi/forum.abi](the ABI file).
+Prerequisites:
+- [Docker 17+]
+- [eosc 1.1+](https://github.com/eoscanada/eosc/releases)
+- [eos-bios 1.2+](https://github.com/eoscanada/eos-bios/releases)
 
+We assume the `docker` binary is available in your `PATH` environment as well as `eosc` and
+`eos-bios`. The `eos-bios` and `eosc` binaries are required to correctly boot the local
+development & test node as well as running the automated test suite.
 
-Sample use
-----------
+#### Building
 
-`post`:
-
-```
-cleos push action eosforumdapp post '{"poster": "YOURACCOUNT", "post_uuid":"somerandomstring", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p YOURACCOUNT@active
-```
-
-
-`propose`:
-
-```
-cleos push action eosforumdapp propose '{"proposer": "proposeracct", "proposal_name": "theproposal", "title": "The title, for list views", "proposal_json": "{\"type\": \"bps-proposal-v1\", \"content\":\"This is the contents of the proposition\"}"}' -p YOURACCOUNT@active
-
-# Review with:
-
-cleos get table eosforumdapp proposeracct proposal
-```
-
-`vote`:
-
-```
-cleos push action eosforumdapp vote '{"voter": "YOURACCOUNT", "proposer": "proposeracct", "proposal_name": "theproposal", "proposition_hash": "[sha256 of title + proposal_json]", "vote": true, "vote_json": ""}' -p YOURACCOUNT@active
-```
-
-`status`:
+Simply call the `build.sh` script which launches a Docker container and
+compiles the contract:
 
 ```
-cleos push action eosforumdapp status '{"account": "YOURACCOUNT", "content": "This is my status line"}' -p YOURACCOUNT@active
-
-# Review with:
-
-cleos get table eosforumdapp eosforumdapp status
+./build.sh
 ```
 
+#### Running
 
-
-Referendum structure proposals
-==============================
-
-`propose` a question to be voted with those parameters (`proposal_json` version #1)
-
-```
-proposer: eosio
-proposal_name: thequestion
-title: "EOSIO Referendum: The Question About ECAF and friends"  # An English string, to be shown in UIs
-proposal_json: '{
-  "type": "bps-proposal-v1",
-  "content": "# Tally method\n\nThe tally method will be this and that, ... to the best of the active Block Producers's ability.\n\n# Voting period\n\nThe vote will stretch from the block it is submitted, and last for 1 million blocks.\n\n# Vote meaning\n\nA `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.\n\n# The question\n\nDo you wish ECAF to become Santa Claus ?"
-}'
-```
-
-The `vote` would look like:
+You can easily start a development node using the `run.sh` script, which uses
+[eos-bios](https://github.com/eoscanada/eos-bios) and Docker to launch a
+fully configured sandboxed `nodeos` development node:
 
 ```
-voter: myaccount
-proposer: eosio
-proposal_name: thequestion
-proposal_hash: acbdef112387abcefe123817238716acbdef12378912739812739acbd  # sha256 of "title + proposal_json" of proposal
-vote: true
-vote_json: ''
+./run.sh
 ```
 
-The rational behind `proposal_hash` is to confirm that the user was
-presented with the right content. The UI should hash the content
-displayed, in order to mitigate the risk of someone replacing its
-proposition with some different contents and gathering on-chain votes
-under false pretenses.
+This creates the following accounts:
+- `eosforumrcpp`
+- `proposer1`
+- `proposer2`
+- `poster1`
+- `poster2`
+- `voter1`
+- `voter2`
+- `zzzzzzzzzzzz`
 
----
+All accounts created in the development node above use the following public/private
+key pair:
 
-`proposal_json` structure #2:
+- Public: `EOS5MHPYyhjBjnQZejzZHqHewPWhGTfQWSVTWYEhDmJu4SXkzgweP`
+- Private: `5JpjqdhVCQTegTjrLtCSXHce7c9M8w7EXYZS7xC13jVFF4Phcrx`
 
-```
-proposal_json: '{
-  "type": "bps-proposal-v2",
-  "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
-  "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
-  "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
-  "question": "Do you wish ECAF to become Santa Claus ?"
-}'
-```
-
----
-
-`proposal_json` structure #3:
+You can pre-fill your environment with some proposals and votes easily by simply
+calling the `./tests/data.sh` script.
 
 ```
-proposal_json: '{
-  "type": "bp-proposal-v3",
-  "tally": "The tally method will be this and that, ... to the best of the active Block Producers's ability.",
-  "voting_period": "The vote will stretch from the block it is submitted, and last for 1 million blocks.",
-  "vote_meaning": "A `vote` with value `true` means you adhere to the proposition.  A `vote` with value `false` means you do not adhere to the proposition.",
-  "question": {
-    "en": "Do you wish ECAF becomes Santa Claus?",
-    "fr": "Voulez-vous que l'ECAF devienne le père Noël ?"
-  }
-}'
+./tests/data.sh
 ```
 
+Once you are done with the `nodeos` development node, simply call `stop.sh`
+to stop the running instance:
 
-Vocabulary for JSON structures
-------------------------------
+```
+./stop.sh
+```
+
+##### Environment
+
+To easily interact with the development node via `eosc` on your terminal, simply export
+the following environment variables:
+
+```
+export EOSC_GLOBAL_INSECURE_VAULT_PASSPHRASE="secure"
+export EOSC_GLOBAL_API_URL="http://localhost:9898"
+export EOSC_GLOBAL_VAULT_FILE="`pwd`/tests/eosc-vault.json"
+```
+
+The [direnv](https://direnv.net/) tool can be used to automatically import those variables
+when you `cd` in the project's root directory.
+
+#### Tests
+
+Running the full automatic test suite is easy as doing:
+
+```
+./tests.sh
+```
+
+This launches `nodeos` development node (via `./run.sh`) and then
+executes all the integration tests found in `tests` folder (see [all.sh](./tests/all.sh)
+for exact files picked up).
+
+To correctly run the tests, you will need to switch the freeze period of
+a proposal for 2 seconds (waiting 6 months could be a bit too long!)
+
+In the file [include/forum.hpp](./include/forum.hpp), change the line:
+
+```
+constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 3 * 24 * 60 * 60;
+```
+
+So it looks like this instead:
+
+```
+constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
+```
+
+The `test.sh` script refuses to run if the string it not found in the file.
+
+**Important** Be 100% sure to revert back the changes, you would not like to
+push a freeze period of 2 seconds in the repository!
+
+### Deployment
+
+The latest version of this code lives on the `eosforumrcpp` account on
+the EOS Mainnet and on the `cancancan345` account on the EOS Kylin network.
+
+Tools that initially integrated support for this contract are:
+- [eosc](https://github.com/eoscanada/eosc) has a command-line interface
+  implementation to submit posts and votes (in unreleased `master`).
+- [EOS ToolKit Forum Post](https://eostoolkit.io/forumpost) allows you to post content through this contract.
+- MyEOSKit already has special casing for the `post` actions. See
+  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
+
+
+### Reference
+
+Here the list of possible actions:
+
+- [propose](#action-propose)
+- [expire](#action-expire)
+- [vote](#action-vote)
+- [unvote](#action-unvote)
+- [clnproposal](#action-clnproposal)
+- [post](#action-post)
+- [unpost](#action-unpost)
+- [status](#action-status)
+
+#### Action `propose`
+
+Propose a new proposal to the community.
+
+##### Parameters
+
+- `proposer` (type `account_name`) - The actual proposer's account
+- `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
+- `title` (type `string`) - The proposal's title (must be less than 1024 characters)
+- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `expires_at` (type `time_point_sec`) - The expiration date of the proposal, must be no later than 6 months in the future, ISO 8601 string format (in UTC) **without** a timezone modifier.
+
+##### Rejections
+
+- When missing signature of `proposer`
+- When `proposal_name` already exists
+- When `title` is longer than 1024 characters
+- When `proposal_json` JSON is invalid or too large (must be a JSON object and be less than 32768 characters)
+- When `expires_at` date is earlier than now or later than 6 months in the future
+
+##### Example
+
+```
+eosc tx create eosforumrcpp propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
+```
+
+#### Action `vote`
+
+Vote for a given proposal using your account.
+
+##### Parameters
+
+- `voter` (type `account_name`) - The actual voter's account
+- `proposal_name` (type `name`) - The proposal's name to vote on
+- `vote` (type `uint8`) - Your vote on the proposal, `0` means a negative vote, `1` means a positive vote
+- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+
+##### Rejections
+
+- When missing signature of `voter`
+- When `proposal_name` does not exist
+- When `proposal_name` is already expired
+- When the `vote_json` JSON is invalid or too large (must be a JSON object and be less than 8192 characters)
+
+##### Example
+
+```
+eosc tx create eosforumrcpp vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
+```
+
+#### Action `unvote`
+
+Remove your current active vote, effectively reclaiming the stored RAM of the vote. Of course,
+your vote will not count anymore neither positively or negatively on the current proposal's voting
+statistics.
+
+It's **not** possible to `unvote` on a proposal that is expired but within its freeze period of 3 days.
+If the proposal is expired and the freeze period has elapsed, it's correct to `unvote` on the proposal.
+To be nice to the community however, you should call [clnproposal](#action-clnproposal) until the proposal
+is fully cleaned up  if the freeze period is over and proposal is expired so that every vote will be
+removed and RAM will be freed for all voters.
+
+##### Parameters
+
+- `voter` (type `account_name`) - The actual voter's account
+- `proposal_name` (type `name`) - The proposal's name to remove vote from
+
+##### Rejections
+
+- When missing signature of `voter`
+- When `proposal_name` does not exist
+- When `proposal_name` is expired but within its freeze period of 3 days
+
+##### Example
+
+```
+eosc tx create eosforumrcpp unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
+```
+
+#### Action `expire`
+
+Expires right now a currently active proposal. The proposal can only be expired by the original proposer
+that created it. It's not valid to expire an already expired proposal.
+
+##### Parameters
+
+- `proposal_name` (type `name`) - The proposal's name to expire
+
+##### Rejections
+
+- When missing signatures of proposal's `proposer`
+- When `proposal_name` does not exist
+- When `proposal_name` is already expired
+
+##### Example
+
+```
+eosc tx create eosforumrcpp expire '{"proposal_name": "example"}' -p proposer1@active
+```
+
+**Note** `proposer1` must be the same as the one that created initially the `example` proposal.
+
+#### Action `clnproposal`
+
+Clean a proposal from all its votes and the proposal itself if there is no more vote on it. The action
+works iteratively, receiving a `max_count` value. It removes as much as `max_count` votes. When there
+is no more votes, the proposal itself is deleted.
+
+This effectively clears all the RAM consumed for a proposal and all its votes. Call the action multiple
+time until all votes are removed.
+
+It's possible to clean a proposal only if it has expired and if its freeze period of 3 days as fully
+elapsed. Within the freeze period, the proposal is locked and no actions can be performed on it.
+Since only expired proposals can be cleaned, anybody can invoke this action, no signatures is required.
+Voters, proposers and in fact, anybody is invited to call `clnproposal` to clean the RAM related to
+a proposal.
+
+**Note** Since a proposal can expires only by a manual action issued by the proposal's author or if it
+has passed its `expires_at` value, it's safe to be called by anybody since the proposal has effectively
+terminated its lifecycle.
+
+##### Parameters
+
+- `proposal_name` (type `name`) - The proposal's name to clean
+- `max_count` (type `uint64`) - The amount of vote to clean out in this batch
+
+##### Rejections
+
+- When `proposal_name` is not expired yet
+- When `proposal_name` is expired but within its freeze period of 3 days
+
+**Note** Giving a `max_count` that is too big increases the probability that the transaction
+fails due to excessive CPU usage. Find the sweet spot to avoid that.
+
+##### Example
+
+```
+eosc tx create eosforumrcpp clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
+```
+
+**Note** We said earlier that signature is not required, it's still required to correctly send
+the transaction however, it's just not checked.
+
+#### Action `post`
+
+##### Parameters
+
+- `poster` (type `account_name`) - The poster's account
+- `post_uuid` (type `string`) - The post `UUID` (for reply purposes)
+- `content` (type `string`) - The actual content of the post
+- `reply_to_poster` (type `account_name`) - The initial post's poster your post replies to
+- `reply_to_post_uuid` (type `string`) - The initial post's `UUID` your post replies to
+- `certify` (type `bool`) - Reserved for future use
+- `json_metadata` (type `string`) - The post's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+
+##### Rejections
+
+- When missing signature of `poster`
+- When `content` is the empty string
+- When `content` is bigger than 10240 characters
+- When `post_uuid` is the empty string
+- When `post_uuid` is bigger than 128 characters
+- When `reply_to_poster` is not set but `reply_to_post_uuid` is
+- When `reply_to_poster` is not an existing account
+- When `reply_to_poster` is set and `reply_to_post_uuid` is the empty string
+- When `reply_to_poster` is set and `reply_to_post_uuid` is bigger than 128 characters
+- When `json_metadata` JSON is invalid or too large (must be a JSON object and be less than 8192 characters)
+
+##### Example
+
+```
+eosc tx create eosforumrcpp post '{"poster": "proposer1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p proposer1@active
+```
+
+#### Action `unpost`
+
+##### Parameters
+
+- `poster` (type `account_name`) - Remove a previous post you did
+- `post_uuid` (type `string`) - The post's `UUID` to remove
+
+##### Rejections
+
+- When missing signature of `poster`
+- When `post_uuid` is the empty string
+- When `post_uuid` is bigger than 128 characters
+
+##### Example
+
+```
+eosc tx create eosforumrcpp unpost '{"poster": "proposer1", "post_uuid":"examplepost_id"}' -p proposer1@active
+```
+
+#### Action `status`
+
+Record the status for the following `account`. If the `content` is empty, the action will remove the
+previous status. Otherwise, it add a status entry for the `account` using the `content` received.
+
+##### Parameters
+
+- `account` (type `account_name`) - The status' account
+- `content` (type `string`) - The content associated to the status
+
+##### Rejections
+
+- When missing signature of `account`
+- When `post_uuid` is bigger than 256 characters
+- When `content` is the empty string and no previous `status` existed for `account`
+
+Example (add status):
+
+```
+eosc tx create eosforumrcpp status '{"account": "voter2", "content":"status of something"}' -p voter2@active
+```
+
+Example (remove previous status):
+
+```
+eosc tx create eosforumrcpp status '{"account": "voter2", "content":""}' -p voter2@active
+```
+
+#### Table `proposals`
+
+##### Row
+- `proposal_name` (type `name`) - The proposal's name, its id among all proposals
+- `proposer` (type `account_name`) - The actual proposer's account
+- `title` (type `string`) - The proposal's title, a brief description of the proposal
+- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `created_at` (type `time_point_sec`) - The date at which the proposal's was created, ISO 8601 string format (in UTC) **without** a timezone modifier.
+- `expires_at` (type `time_point_sec`) - The date at which the proposal's will expire, ISO 8601 string format (in UTC) **without** a timezone modifier.
+
+##### Indexes
+- First (`1` type `name`) - Index by `proposal_name` field
+- Second (`2` type `name`) - Index by `proposer`
+
+##### Example (get all proposals):
+
+```
+eosc get table eosforumrcpp eosforumrcpp proposal
+```
+
+##### Example (get all proposals for a given proposer):
+
+**Caveats** Right now, `eosc` does not support searching giving only a direct key. Instead, it really requires
+a lower and upper bound. The upper bound being exclusive, to correctly get the upper bound, take the name
+is change the last character to the next one in the EOS' name alphabet (order is `a-z0-9.`).
+
+So, looking for all proposals proposed by `joshkaufman`, the lower bound key would be `joshkaufman` and
+the upper bound key would be `joshkaufmao` (last character `n` bumped to next one `o`).
+
+```
+eosc get table eosforumrcpp eosforumrcpp proposal --index 2 --key-type name --lower-bound joshkauffman --upper-bound joshkauffmao
+```
+
+#### Table `status`
+
+##### Row
+- `account` (type `account_name`) - The status's poster
+- `content` (type `string`) - The content of the status
+- `updated_at` (type `time_point_sec`) - The date at which the status's was last updated, ISO 8601 string format (in UTC) **without** a timezone modifier.
+
+##### Example
+
+```
+eosc get table eosforumrcpp eosforumrcpp status
+```
+
+#### Table `vote`
+
+##### Row
+- `id` (type `uint64`) - The unique id of the `voter`/`proposal_name` pair
+- `proposal_name` (type `name`) - The `proposal_name` on which the vote applies
+- `voter` (type `account_name`) - The `voter` that voted
+- `vote` (type `uint8`) - The vote value of the `voter` (`0` means negative vote, `1` means a positive vote)
+- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `updated_at` (type `time_point_sec`) - The date at which the vote's was last updated, ISO 8601 string format (in UTC) **without** a timezone modifier.
+
+##### Indexes
+- First (`1` type `i64`) - Index by `id` field
+- Second (`2` type `i128` input in hexadecimal little-endian format) - Index by proposal name, the key is composed in the high bytes using the `proposal_name` and the low bytes are the `voter`.
+- Third (`3` type `i128` input in hexadecimal little-endian format) - Index by voter, the key is composed in the high bytes using the `voter` and the low bytes are the `proposal_name`.
+
+##### Example (get all votes):
+
+```
+eosc get table eosforumrcpp eosforumrcpp vote
+```
+
+##### Example (get all votes for a given proposal):
+
+The idea is to turn the `proposal_name` in an integer, convert it to hexadecimal, and compute the lowest
+possible key for `voter` (lower bound) as well as the highest possible key for `voter` (upper bound).
+
+**Note** The hexadecimal values below are all in little-endian format, so high byte are on the right side
+and low bytes on the left side.
+
+Here the steps to compute the lower/upper bounds for the table query:
+
+ 1. Convert `ramusetest` EOS name to hexadecimal using `eosc tools name`.
+
+   ```
+   eosc tools names ramusetest
+
+   from \ to  hex               hex_be            name        uint64
+   ---------  ---               ------            ----        ------
+   name       0040c62a2baca5b9  b9a5ac2b2ac64000  ramusetest  13377287569575133184
+   ```
+
+ 1. Create the `lower_bound` key by prepending `0000000000000000` to the `hex` value shown
+   above: `0x00000000000000000040c62a2baca5b9`
+
+ 1. Create the `upper_bound` key by prepending `ffffffffffffffff` to the `hex` value shown
+   above: `0xffffffffffffffff0040c62a2baca5b9`.
+
+Now that we have the lower and upper bound keys, simply perform your query:
+
+```
+eosc get table eosforumrcpp eosforumrcpp vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
+```
+
+You will see only the votes against the proposal `ramusetest`.
+
+##### Example (get all proposals a voter voted for):
+
+The idea is to turn the `voter` in an integer, convert it to hexadecimal, and compute the lowest
+possible key for `proposal_name` (lower bound) as well as the highest possible key for `proposal_name` (upper bound).
+
+**Note** The hexadecimal values below are all in little-endian format, so high byte are on the right side
+and low bytes on the left side.
+
+Here the steps to compute the lower/upper bounds for the table query:
+
+ 1. Convert `joshkauffman` EOS name to hexadecimal using `eosc tools name`.
+
+   ```
+   eosc tools names joshkauffman
+
+   from \ to  hex               hex_be            name          uint64
+   ---------  ---               ------            ----          ------
+   name       308d5c4b1bd8307d  7d30d81b4b5c8d30  joshkauffman  9020947665363176752
+   ```
+
+ 1. Create the `lower_bound` key by prepending `0000000000000000` to the `hex` value shown
+   above: `0x0000000000000000308d5c4b1bd8307d`
+
+ 1. Create the `upper_bound` key by prepending `ffffffffffffffff` to the `hex` value shown
+   above: `0xffffffffffffffff308d5c4b1bd8307d`.
+
+Now that we have the lower and upper bound keys, simply perform your query:
+
+```
+eosc get table eosforumrcpp eosforumrcpp vote --index 3 --key-type i128 --lower-bound 0x0000000000000000308d5c4b1bd8307d --upper-bound 0xffffffffffffffff308d5c4b1bd8307d
+```
+
+You will see only the proposals voter `joshkauffman` voted for.
+
+#### JSON Structure Guidelines
 
 You can use any vocabulary you want when doing posts, proposals and
-votes. However, by following some simple guidelines, you can simplify
-your life and the life of those building UIs around these messages.
+votes, there is no specification yet for the JSON. However, by following
+some simple guidelines, you can simplify your life and the life of those
+building UIs around these messages.
 
 For all `json` prefixed or suffixed fields in `propose`, `vote` and
-`post`, the `type` field determines a higher order protocol, and
+`post`, the `type` field should determines a higher order protocol, and
 determines what other sibling fields will be required.
 
-### In a `propose`'s `proposal_json` field
+##### In a `propose`'s `proposal_json` field
 
-* `type` is a required field to distinguish protocol.  See types in this section below.
+* `type` is a required field to distinguish protocol. See types in this section below.
 
 * `question` means be the reference language question of a
   proposition.
 
-* `content` is a Markdown document, detailing everything there is to know about the proposal (tally methods, time frame, references, required etc..)
+* `content` is a Markdown document, detailing everything there is to know about the proposal
+   (tally methods, time frame, references, required etc..)
 
-* `ends_at_block_height` is an integer representing the last block
-  height (inclusively) at which votes will be counted for this
-  proposition. Any votes cast after this end height will not be
-  counted.
-
-
-### In a `vote`'s `vote_json` field
+##### In a `vote`'s `vote_json` field
 
 * `type` is optional. Defaults to `simple` if not present.
 
-The `proposal_hash` is not enforced by the contract but might be
-required by some proposals to consider a vote in the tally.
-
-#### `type` values
+###### `type` values
 
 * `simple` is the same as no `type` at all. The value of the vote is
   the boolean `vote` field of the _action_.
 
-
-### In a `post`'s `json_metadata` field
+##### In a `post`'s `json_metadata` field
 
 * `type` is a required field to distinguish protocol.  See below for
   sample types
@@ -207,8 +588,7 @@ want.
 
 * `tags` is a list of strings, prefixed or not with a `#`.
 
-
-#### `type` values
+###### `type` values
 
 * `chat`, which is a simple chat, pushing a message out.
 
@@ -218,12 +598,12 @@ want.
 * `eos-bps-emergency`, once **3** block producers send a message of
   this type within an hour, all block producers can trigger a wake-up
   alarm within 1h. Do not abuse this message to avoid alert
-  fatigue. Example: serious vulnerability requires mitigation, serious
+  fatigue. ##### Example serious vulnerability requires mitigation, serious
   network issues, immediate action required, etc..
 
 * `eos-bps-notify`, once **7** block producers send a message of this type
   within an hour, other block producers can trigger a notification to
-  get their attention in the **next 24h**. Example: new ECAF order requires
+  get their attention in the **next 24h**. ##### Example new ECAF order requires
   attention.
 
 * `eos-arbitration-order`, BPs can watch for known Arbitration forums
@@ -231,30 +611,10 @@ want.
   could be defined like a link to the PDF format order; a reference to
   a ready-made `eosio.msig` transaction proposition; etc..
 
+### License
 
-Current rollout
-===============
+MIT [See license file](./LICENSE.md)
 
-The latest version of this code lives on the `eosforumdapp` account on
-the EOS mainnet.
-
-Tools that initially integrated support for this contract are:
-* [eosc](https://github.com/eoscanada/eosc) has a command-line interface
-  implementation to submit posts and votes (in unreleased `master`).
-* https://eostoolkit.io/forumpost allows you to post content through this contract.
-* MyEOSKit already has special casing for the `post` actions. See
-  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
-
-
-
-
-LICENSE
-=======
-
-MIT
-
-
-Credits
-=======
+### Credits
 
 Original code and inspiration: Daniel Larimer

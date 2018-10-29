@@ -1,5 +1,9 @@
-export API=${EOS_TEST_API:-"http://localhost:8888"}
-export CONTRACT=${EOS_TEST_CONTRACT:-"eosforumdapp"}
+# Binary eosc configuration
+export EOSC_GLOBAL_INSECURE_VAULT_PASSPHRASE=${EOSC_GLOBAL_INSECURE_VAULT_PASSPHRASE:-"secure"}
+export EOSC_GLOBAL_API_URL=${EOSC_GLOBAL_API_URL:-"http://localhost:9898"}
+export EOSC_GLOBAL_VAULT_FILE="$ROOT/eosc-vault.json"
+
+export CONTRACT=${EOS_TEST_CONTRACT:-"eosforumrcpp"}
 
 export CHARS_50="abcdefhijklmnopqrstuwxyabcdefhijklmnopqrstuwxy0123"
 export CHARS_250="${CHARS_50}${CHARS_50}${CHARS_50}${CHARS_50}${CHARS_50}"
@@ -10,20 +14,17 @@ export CHARS_37500="${CHARS_13000}${CHARS_13000}${CHARS_6250}"
 
 export EXPIRES_AT=`date -u -v+1d +"%Y-%m-%dT%H:%M:%S"`
 
-export CLEOS="cleos -u $API"
-
 print_config() {
     echo "Config"
     echo " API: ${API}"
     echo " Contract: ${CONTRACT}"
-    echo " Cleos: ${CLEOS}"
     echo ""
 }
 
 # usage: action_ok <action> <permission> <json>
 action_ok() {
     info -n "Pushing OK action '$1 ($2)' ... "
-    output=`$CLEOS push action -f --json ${CONTRACT} $1 "${3}" --permission $2 2>&1`
+    output=`eosc tx create -f ${CONTRACT} $1 "${3}" --permission $2 2>&1`
 
     exit_code=$?
     if [[ $exit_code != 0 ]]; then
@@ -38,7 +39,7 @@ action_ok() {
 # usage: action_ko <action> <permission> <json> <output_pattern>
 action_ko() {
     info -n "Pushing KO action '$1 ($2)' ... "
-    output=`$CLEOS push action -f --json ${CONTRACT} $1 "${3}" --permission $2 2>&1`
+    output=`eosc tx create -f ${CONTRACT} $1 "${3}" --permission $2 2>&1`
 
     exit_code=$?
     if [[ $exit_code == 0 ]]; then
@@ -59,7 +60,7 @@ action_ko() {
 # usage: table_row <table> <scope> [<pattern> ...]
 table_row() {
     info -n "Checking table '$1 ($2)' ... "
-    output=`$CLEOS get table -l 1000 ${CONTRACT} $2 $1 2>&1 | tr -d '\n' | sed 's/  */ /g'`
+    output=`eosc get table --limit 1000 ${CONTRACT} $2 $1 2>&1 | tr -d '\n' | sed 's/  */ /g'`
 
     exit_code=$?
     if [[ $exit_code != 0 ]]; then
