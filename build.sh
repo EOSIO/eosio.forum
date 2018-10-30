@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
+ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [[ -f $ROOT/.git/hooks/pre-commit ]];  then
+    echo "Installing hook..."
+fi
+exit 1
+
 BROWN='\033[0;33m'
-RED='\033[0;31m'
 NC='\033[0m'
 
-printf "${BROWN}=========== Building eosio.forum ===========${NC}\n\n"
+CDT_CONTAINER=${CDT_CONTAINER:-"gcr.io/eoscanada-public/eosio-cdt"}
+CDT_VERSION=${CDT_VERSION:-"v1.2.1"}
 
-BUILD_SUFFIX=${1}
-CORES=`getconf _NPROCESSORS_ONLN`
+if [[ $1 == "clean" ]]; then
+    $ROOT/clean.sh
+    echo ""
+fi
 
-mkdir -p build${BUILD_SUFFIX}
-pushd build${BUILD_SUFFIX} &> /dev/null
-cmake ../
-make -j${CORES}
-popd &> /dev/null
+printf "${BROWN}Starting container and compiling${NC}\n"
+docker run --rm -it -v $ROOT:/contract -w /contract $CDT_CONTAINER:$CDT_VERSION ./compile.sh

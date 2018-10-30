@@ -9,7 +9,11 @@ source "${TEST_DIR}/library.sh"
 print_config
 
 for var in `ls $TEST_DIR`; do
-    if [[ $var == "all.sh" || $var == "data.sh" || $var == local_*.sh || $var == "library.sh" || $var == "README.md" ]]; then
+    if [[ $var == "all.sh" || $var == "data.sh" || $var == local_*.sh || $var == "library.sh" || $var == "boot.sh" ]]; then
+        continue
+    fi
+
+    if [[ $var != *.sh ]]; then
         continue
     fi
 
