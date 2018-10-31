@@ -3,8 +3,9 @@
 ## Description
 
 A user is able to cast a {{ vote }} by associating it {{ proposal_name }}. To 
-change a vote, a user only needs to issue another {{ vote }} action. They could
-also use {{ unvote }} to override a previous {{ vote }}.
+change a vote, a user only needs to issue another {{ vote }} action - only the 
+most recent {{ vote }} action of an account will be considered as valid . A user
+could also use {{ unvote }} to override a previous {{ vote }}.
 
 If I am not the beneficial owner of these tokens, I stipulate I have proof that 
 I’ve been authorized to vote these tokens by their beneficial owner(s).
