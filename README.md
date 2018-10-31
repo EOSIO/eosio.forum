@@ -37,7 +37,7 @@ associated to that vote.
 
 While a proposal is still active a proposer can decide to manually expire it
 by calling the `expire` action which receives as its only argument the `proposal_name`.
-This amends the proposal's `expires_at` field to the current time instead of waiting for 
+This amends the proposal's `expires_at` field to the current time instead of waiting for
 its original expiration date to be reached.
 
 Once a proposal is expired (be it manually or automatically if it passed its expiration date), the
@@ -170,10 +170,9 @@ the EOS Mainnet and on the `cancancan345` account on the EOS Kylin network.
 Tools that initially integrated support for this contract are:
 - [eosc](https://github.com/eoscanada/eosc) has a command-line interface
   implementation to submit posts and votes.
-- [EOS ToolKit Forum Post](https://eostoolkit.io/forumpost) allows you to post content through this contract.
+- [EOS ToolKit Forum Post](https://www.myeoskit.com/tools/referendums) allows you to post content through this contract.
 - MyEOSKit already has special casing for the `post` actions. See
   [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
-
 
 ### Reference
 
