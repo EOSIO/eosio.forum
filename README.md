@@ -213,6 +213,11 @@ Propose a new proposal to the community.
 ```
 eosc tx create eosforumrcpp propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
 ```
+OR
+
+```
+eosc forum propose proposer1 example "The title, for list views" 2019-01-30T17:03:20 --json "[JSON object]"
+```
 
 #### Action `vote`
 
@@ -236,6 +241,10 @@ Vote for a given proposal using your account.
 
 ```
 eosc tx create eosforumrcpp vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
+```
+OR
+```
+eosc forum vote voter1 example 0
 ```
 
 #### Action `unvote`
@@ -266,6 +275,10 @@ is fully cleaned up so that every vote will be removed and RAM will be freed for
 ```
 eosc tx create eosforumrcpp unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
 ```
+OR
+```
+eosc forum unvote voter1 example
+```
 
 #### Action `expire`
 
@@ -287,12 +300,16 @@ that created it. It's not valid to expire an already expired proposal.
 ```
 eosc tx create eosforumrcpp expire '{"proposal_name": "example"}' -p proposer1@active
 ```
+OR
+```
+eosc forum expire proposer1 example
+```
 
 **Note** `proposer1` must be the same as the one that created initially the `example` proposal.
 
 #### Action `clnproposal`
 
-Clean a proposal from all its votes and the proposal itself once there are no more assocated votes. The action
+Clean a proposal from all its votes and the proposal itself once there are no more associated votes. The action
 works iteratively, receiving a `max_count` value. It removes as many as `max_count` votes. When there
 are no more votes, the proposal itself is deleted.
 
@@ -327,9 +344,10 @@ fails due to excessive CPU usage. Find the sweet spot to avoid that.
 ```
 eosc tx create eosforumrcpp clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
 ```
-
-
-
+OR
+```
+eosc forum clean-proposal [cleaner_account_name] example 100
+```
 
 #### Action `post`
 
@@ -359,7 +377,11 @@ eosc tx create eosforumrcpp clnproposal '{"proposal_name": "example", "max_count
 ##### Example
 
 ```
-eosc tx create eosforumrcpp post '{"poster": "proposer1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p proposer1@active
+eosc tx create eosforumrcpp post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
+```
+OR
+```
+eosc forum post poster1 "hello world"
 ```
 
 #### Action `unpost`
@@ -378,7 +400,11 @@ eosc tx create eosforumrcpp post '{"poster": "proposer1", "post_uuid":"examplepo
 ##### Example
 
 ```
-eosc tx create eosforumrcpp unpost '{"poster": "proposer1", "post_uuid":"examplepost_id"}' -p proposer1@active
+eosc tx create eosforumrcpp unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
+```
+OR
+```
+eosc forum unpost poster1 [UUID_of_example]
 ```
 
 #### Action `status`
@@ -408,6 +434,16 @@ Example (remove previous status):
 ```
 eosc tx create eosforumrcpp status '{"account": "voter2", "content":""}' -p voter2@active
 ```
+OR
+```
+eosc forum status voter2 "status of something"
+```
+
+Example (remove previous status):
+
+```
+eosc forum status voter2 ""
+```
 
 #### Table `proposals`
 
@@ -428,6 +464,10 @@ eosc tx create eosforumrcpp status '{"account": "voter2", "content":""}' -p vote
 ```
 eosc get table eosforumrcpp eosforumrcpp proposal
 ```
+OR
+```
+eosc forum list
+```
 
 ##### Example (get all proposals for a given proposer):
 
@@ -440,6 +480,10 @@ the upper bound key would be `testusertesu` (last character `t` bumped to next o
 
 ```
 eosc get table eosforumrcpp eosforumrcpp proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
+```
+OR
+```
+eosc forum list --from-proposer testusertest
 ```
 
 #### Table `status`
