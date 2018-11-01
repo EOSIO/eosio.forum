@@ -59,7 +59,7 @@ arise by cleaning proposals.
 ### Development
 
 Prerequisites:
-- [Docker 17+]
+- [Docker 17+](https://www.docker.com/get-started)
 - [eosc 1.1+](https://github.com/eoscanada/eosc/releases)
 - [eos-bios 1.2+](https://github.com/eoscanada/eos-bios/releases)
 

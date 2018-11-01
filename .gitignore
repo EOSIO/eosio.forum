@@ -12,8 +12,5 @@ Makefile
 # Env
 .envrc
 
-# eosc
-eosc-vault.json
-
 # VSCode
 .vscode

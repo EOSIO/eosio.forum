@@ -1,0 +1,7 @@
+{
+  "kind": "eosc-vault-wallet",
+  "version": 1,
+  "comment": "Key corresponding to genesis.key, password encrypted with 'secure'",
+  "secretbox_wrap": "passphrase",
+  "secretbox_ciphertext": "+gnRrzVuhZjb7ncdeDYWkz9dfJ5TxD3Ab/o06VW7CIpP3wFA4E/UwdM/nQbiP1Q2K7iTLuKeADLypEkrR0J7XFCM2y2Mp9KZatdXzaDWUGWO9gdWdBgVqAGrBteolRoJQe+DICELJyub1ArKrJ3skAhij1jP7yYh"
+}
