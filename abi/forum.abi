@@ -116,42 +116,42 @@
     {
       "name": "propose",
       "type": "propose",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ propose }}`\n\n## Description\n\n{{ propose }} creates a message on-chain with the intention of receiving \nvotes from any community members who wish to cast a {{ vote }}. \n\nEach proposal shall be identified with a unique {{ proposal_name }}.\n\nAn expiry will be defined in {{ expires_at }}, which can be no later than\n6 months in the future. \n\n{{ proposer }} must pay for the RAM to store {{ proposal_name }}, which\nwill be returned to them once {{ clnproposal }} has been called.\n"
     },
     {
       "name": "expire",
       "type": "expire",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ expire }}`\n\n## Description\n\n{{ expire }} can only be called by {{ proposer }}.\n\n{{ expire }} is used to modify {{ expires_at }}. Once {{ expire }} has been called,\nno more votes will be accepted for {{ proposal_name }}.\n"
     },
     {
       "name": "vote",
       "type": "vote",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ vote }}`\n\n## Description\n\nA user is able to cast a {{ vote }} by associating it {{ proposal_name }}. To \nchange a vote, a user only needs to issue another {{ vote }} action - only the \nmost recent {{ vote }} action of an account will be considered as valid . A user\ncould also use {{ unvote }} to override a previous {{ vote }}.\n\nIf I am not the beneficial owner of these tokens, I stipulate I have proof that \nI\u2019ve been authorized to vote these tokens by their beneficial owner(s).\n\nA user who has a proxy set on their account will be providing implicit consent\nfor that proxy to {{ vote }} on their behalf. A user who has a designated proxy\nmay choose to also cast a {{ vote }}, which will override the delegation of voting\nauthority to that proxy.\n\nI stipulate I have not and will not accept anything of value in exchange for these \nvotes, on penalty of confiscation of these tokens, and other penalties. \n\nAny disputes arising out of use of this contract shall be ruled under the Rules\nfor Dispute Resolution of the EOS Core Arbitration Forum by one or more arbitrators \nappointed in accordance with the said Rules.\n"
     },
     {
       "name": "unvote",
       "type": "unvote",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ unvote }}`\n\n## Description\n\n{{ unvote }} allows a user to remove a {{ vote }} they have previously\ncast on {{ proposal_name }}. \n\n{{ unvote }} will not function during the 72 hour period after \n{{ proposal_name }} has expired.\n\nThe RAM that was used to store the {{ vote }} shall be freed-up immediately\nafter calling {{ unvote }}.\n"
     },
     {
       "name": "clnproposal",
       "type": "clnproposal",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ clnproposal }}`\n\n## Description\n\nThis action is used to clear the RAM being used to store all information related to \n{{ proposal_name }}. All associated votes must be cleared before {{ proposal_name }}\ncan be cleared from the RAM of {{ proposer }}.\n\nThis action can be called by any user, requiring no authorization.\n\nThis action can only be called 72 hours after {{ expires_at }} has been reached.\n{{ expires_at }} is set at the moment that {{ proposal_name }} is created, and can\nonly be updated by {{ proposer }}. This will allow time to compute a tally of all\nassociated votes before it can be cleared.\n\nThe user who calls {{ clnproposal }} will pay the CPU and NET bandwidth required\nto process the action. They will need to specify {{ max_count }} to ensure that the \naction can be processed within a single block's maximum allowable limits.\n"
     },
     {
       "name": "post",
       "type": "post",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ post }}`\n\n## Description\n\n{{ post }} is used to create a post that can either be a parent or\nbe a response to parent post. They are threaded together using {{ post_uuid }}.\n"
     },
     {
       "name": "unpost",
       "type": "unpost",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `unpost`\n\n## Description\n\nThe intent of the `unpost` action is to suggest that a previously posted message (through the `post` action), as referred by `post_uuid`, be removed by the different front-ends reading this contract's transaction flow.\n\nI, {{ poster }} understand that this action will not remove the message from circulation, as it will be imprinted in the blockchain.  I also understand that some front-ends might not remove the message, and even highlight the fact that a message was intended to be removed, potentially attracting attention on an undesired message.\n"
     },
     {
       "name": "status",
       "type": "status",
-      "ricardian_contract": ""
+      "ricardian_contract": "# Action - `{{ status }}`\n\n## Description\n\n{{ status }} is used to record a status for the associated {{ account }}.\nIf the {{ content }} is empty, the action will remove a previous status.\nOtherwise, it will add a status entry for the {{ account }} using the\n{{ content }} received.\n"
     }
   ],
   "tables": [
@@ -178,5 +178,74 @@
     }
   ],
   "clauses": [],
-  "ricardian_clauses": []
+  "ricardian_clauses": [
+    {
+      "id": "Parameters",
+      "body": "Implied parameters:\n* _**account_name**_ (name of the party invoking and signing the contract)"
+    },
+    {
+      "id": "Intent",
+      "body": "INTENT. The intention of the author and the invoker of this contract is to print output. It shall have no other effect."
+    },
+    {
+      "id": "Term",
+      "body": "TERM. This Contract expires at the conclusion of code execution."
+    },
+    {
+      "id": "Warranty",
+      "body": "WARRANTY. {{ account_name }} shall uphold its Obligations under this Contract in a timely and workmanlike manner, using knowledge and recommendations for performing the services which meet generally acceptable standards set forth by EOSIO Blockchain Block Producers."
+    },
+    {
+      "id": "Default",
+      "body": "DEFAULT. The occurrence of any of the following shall constitute a material default under this Contract:"
+    },
+    {
+      "id": "Remedies",
+      "body": "REMEDIES. In addition to any and all other rights a party may have available according to law, if a party defaults by failing to substantially perform any provision, term or condition of this Contract, the other party may terminate the Contract by providing written notice to the defaulting party. This notice shall describe with sufficient detail the nature of the default. The party receiving such notice shall promptly be removed from being a Block Producer and this Contract shall be automatically terminated."
+    },
+    {
+      "id": "Force Majeure",
+      "body": "FORCE MAJEURE. If performance of this Contract or any obligation under this Contract is prevented, restricted, or interfered with by causes beyond either party's reasonable control (\"Force Majeure\"), and if the party unable to carry out its obligations gives the other party prompt written notice of such event, then the obligations of the party invoking this provision shall be suspended to the extent necessary by such event. The term Force Majeure shall include, without limitation, acts of God, fire, explosion, vandalism, storm or other similar occurrence, orders or acts of military or civil authority, or by national emergencies, insurrections, riots, or wars, or strikes, lock-outs, work stoppages, or supplier failures. The excused party shall use reasonable efforts under the circumstances to avoid or remove such causes of non-performance and shall proceed to perform with reasonable dispatch whenever such causes are removed or ceased. An act or omission shall be deemed within the reasonable control of a party if committed, omitted, or caused by such party, or its employees, officers, agents, or affiliates."
+    },
+    {
+      "id": "Dispute Resolution",
+      "body": "DISPUTE RESOLUTION. Any controversies or disputes arising out of or relating to this Contract will be resolved by binding arbitration under the default rules set forth by the EOSIO Blockchain. The arbitrator's award will be final, and judgment may be entered upon it by any court having proper jurisdiction."
+    },
+    {
+      "id": "Entire Agreement",
+      "body": "ENTIRE AGREEMENT. This Contract contains the entire agreement of the parties, and there are no other promises or conditions in any other agreement whether oral or written concerning the subject matter of this Contract. This Contract supersedes any prior written or oral agreements between the parties."
+    },
+    {
+      "id": "Severability",
+      "body": "SEVERABILITY. If any provision of this Contract will be held to be invalid or unenforceable for any reason, the remaining provisions will continue to be valid and enforceable. If a court finds that any provision of this Contract is invalid or unenforceable, but that by limiting such provision it would become valid and enforceable, then such provision will be deemed to be written, construed, and enforced as so limited."
+    },
+    {
+      "id": "Amendment",
+      "body": "AMENDMENT. This Contract may be modified or amended in writing by mutual agreement between the parties, if the writing is signed by the party obligated under the amendment."
+    },
+    {
+      "id": "Governing Law",
+      "body": "GOVERNING LAW. This Contract shall be construed in accordance with the Maxims of Equity."
+    },
+    {
+      "id": "Notice",
+      "body": "NOTICE. Any notice or communication required or permitted under this Contract shall be sufficiently given if delivered to a verifiable email address or to such other email address as one party may have publicly furnished in writing, or published on a broadcast contract provided by this blockchain for purposes of providing notices of this type."
+    },
+    {
+      "id": "Waiver of Contractual Right",
+      "body": "WAIVER OF CONTRACTUAL RIGHT. The failure of either party to enforce any provision of this Contract shall not be construed as a waiver or limitation of that party's right to subsequently enforce and compel strict compliance with every provision of this Contract."
+    },
+    {
+      "id": "Arbitrator's Fees to Prevailing Party",
+      "body": "ARBITRATOR\u2019S FEES TO PREVAILING PARTY. In any action arising hereunder or any separate action pertaining to the validity of this Agreement, both sides shall pay half the initial cost of arbitration, and the prevailing party shall be awarded reasonable arbitrator's fees and costs."
+    },
+    {
+      "id": "Construction and Interpretation",
+      "body": "CONSTRUCTION AND INTERPRETATION. The rule requiring construction or interpretation against the drafter is waived. The document shall be deemed as if it were drafted by both parties in a mutual effort."
+    },
+    {
+      "id": "In Witness Whereof",
+      "body": "IN WITNESS WHEREOF, the parties hereto have caused this Agreement to be executed by themselves or their duly authorized representatives as of the date of execution, and authorized as proven by the cryptographic signature on the transaction that invokes this contract."
+    }
+  ]
 }
