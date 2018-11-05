@@ -1,5 +1,6 @@
 # Build
 build*/
+output.log
 scripts/voter_key
 
 # CMake
