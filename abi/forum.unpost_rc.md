@@ -1,4 +1,4 @@
-# Action - `unpost`
+# Action - `{{ unpost }}`
 
 ## Description
 

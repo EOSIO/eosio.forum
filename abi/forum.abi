@@ -116,42 +116,42 @@
     {
       "name": "propose",
       "type": "propose",
-      "ricardian_contract": "# Action - `{{ propose }}`\n\n## Description\n\n{{ propose }} creates a message on-chain with the intention of receiving \nvotes from any community members who wish to cast a {{ vote }}. \n\nEach proposal shall be identified with a unique {{ proposal_name }}.\n\nAn expiry will be defined in {{ expires_at }}, which can be no later than\n6 months in the future. \n\n{{ proposer }} must pay for the RAM to store {{ proposal_name }}, which\nwill be returned to them once {{ clnproposal }} has been called.\n"
+      "ricardian_contract": "# Action - `{{ propose }}`\n\n## Description\n\n`propose` creates a message on-chain with the intention of receiving \nvotes from any community members who wish to cast a `vote`.\n\nEach proposal shall be identified with a unique `proposal_name`.\n\nAn expiry will be defined in `expires_at`, with {{ expires_at }} \nbeing no later than 6 months in the future. \n\n{{ proposer }} must pay for the RAM to store {{ proposal_name }}, which\nwill be returned to them once `clnproposal` has been called.\n"
     },
     {
       "name": "expire",
       "type": "expire",
-      "ricardian_contract": "# Action - `{{ expire }}`\n\n## Description\n\n{{ expire }} can only be called by {{ proposer }}.\n\n{{ expire }} is used to modify {{ expires_at }}. Once {{ expire }} has been called,\nno more votes will be accepted for {{ proposal_name }}.\n"
+      "ricardian_contract": "# Action - `{{ expire }}`\n\n## Description\n\n`expire` can only be called by {{ proposer }}.\n\n`expire` is used to modify the value of `expires_at` to the new time {{ expires_at }}. Once `expire` has been called,\nno more votes will be accepted for {{ proposal_name }}.\n"
     },
     {
       "name": "vote",
       "type": "vote",
-      "ricardian_contract": "# Action - `{{ vote }}`\n\n## Description\n\nA user is able to cast a {{ vote }} by associating it {{ proposal_name }}. To \nchange a vote, a user only needs to issue another {{ vote }} action - only the \nmost recent {{ vote }} action of an account will be considered as valid . A user\ncould also use {{ unvote }} to override a previous {{ vote }}.\n\nIf I am not the beneficial owner of these tokens, I stipulate I have proof that \nI\u2019ve been authorized to vote these tokens by their beneficial owner(s).\n\nA user who has a proxy set on their account will be providing implicit consent\nfor that proxy to {{ vote }} on their behalf. A user who has a designated proxy\nmay choose to also cast a {{ vote }}, which will override the delegation of voting\nauthority to that proxy.\n\nI stipulate I have not and will not accept anything of value in exchange for these \nvotes, on penalty of confiscation of these tokens, and other penalties. \n\nAny disputes arising out of use of this contract shall be ruled under the Rules\nfor Dispute Resolution of the EOS Core Arbitration Forum by one or more arbitrators \nappointed in accordance with the said Rules.\n"
+      "ricardian_contract": "# Action - `{{ vote }}`\n\n## Description\n\nA user is able to cast a vote by associating it to {{ proposal_name }}. To \nchange a vote, a {{ voter }} only needs to call another `vote` action - only the \nmost recent vote of {{ vote_value }} by {{ voter }} will be considered as valid . A user\ncould also use `unvote` to override their previous `vote`.\n\nIf I, {{ voter }}, am not the beneficial owner of these tokens, I stipulate I have proof \nthat I\u2019ve been authorized to vote these tokens by their beneficial owner(s).\n\nA user who has a proxy set on their account will be providing implicit consent\nfor that proxy to `vote` on their behalf. A user who has a designated proxy\nmay choose to also cast a `vote`, which will override the delegation of voting\nauthority to that proxy.\n\nI stipulate I have not and will not accept anything of value in exchange for these \nvotes, on penalty of confiscation of these tokens, and other penalties. \n\nAny disputes arising out of use of this contract shall be ruled under the Rules\nfor Dispute Resolution of the EOS Core Arbitration Forum by one or more arbitrators \nappointed in accordance with said Rules.\n"
     },
     {
       "name": "unvote",
       "type": "unvote",
-      "ricardian_contract": "# Action - `{{ unvote }}`\n\n## Description\n\n{{ unvote }} allows a user to remove a {{ vote }} they have previously\ncast on {{ proposal_name }}. \n\n{{ unvote }} will not function during the 72 hour period after \n{{ proposal_name }} has expired.\n\nThe RAM that was used to store the {{ vote }} shall be freed-up immediately\nafter calling {{ unvote }}.\n"
+      "ricardian_contract": "# Action - `{{ unvote }}`\n\n## Description\n\n`unvote` allows a user to remove their vote of {{ vote_value }} they have previously\ncast on {{ proposal_name }}. \n\n`unvote` will not function during the 72 hour period after \n{{ proposal_name }} has expired at {{ expires_at }}.\n\nThe RAM that was used to store the vote shall be freed-up immediately\nafter `unvote` has been called by {{ voter }}."
     },
     {
       "name": "clnproposal",
       "type": "clnproposal",
-      "ricardian_contract": "# Action - `{{ clnproposal }}`\n\n## Description\n\nThis action is used to clear the RAM being used to store all information related to \n{{ proposal_name }}. All associated votes must be cleared before {{ proposal_name }}\ncan be cleared from the RAM of {{ proposer }}.\n\nThis action can be called by any user, requiring no authorization.\n\nThis action can only be called 72 hours after {{ expires_at }} has been reached.\n{{ expires_at }} is set at the moment that {{ proposal_name }} is created, and can\nonly be updated by {{ proposer }}. This will allow time to compute a tally of all\nassociated votes before it can be cleared.\n\nThe user who calls {{ clnproposal }} will pay the CPU and NET bandwidth required\nto process the action. They will need to specify {{ max_count }} to ensure that the \naction can be processed within a single block's maximum allowable limits.\n"
+      "ricardian_contract": "# Action - `{{ clnproposal }}`\n\n## Description\n\nThis action is used to clear the RAM being used to store all information related to \n{{ proposal_name }}. All associated votes must be cleared before {{ proposal_name }}\ncan be cleared from the RAM of {{ proposer }}.\n\nThis action can be called by any user, requiring no authorization.\n\nThis action can only be called 72 hours after {{ expires_at }} has been reached.\n{{ expires_at }} is set at the moment that {{ proposal_name }} is created, and can\nonly be updated by {{ proposer }}. This will allow time to compute a tally of all\nassociated votes before it can be cleared.\n\nThe user who calls `clnproposal` will pay the CPU and NET bandwidth required\nto process the action. They will need to specify `max_count` to ensure that the \naction can be processed within a single block's maximum allowable limits.\n"
     },
     {
       "name": "post",
       "type": "post",
-      "ricardian_contract": "# Action - `{{ post }}`\n\n## Description\n\n{{ post }} is used to create a post that can either be a parent or\nbe a response to parent post. They are threaded together using {{ post_uuid }}.\n"
+      "ricardian_contract": "# Action - `{{ post }}`\n\n## Description\n\n`post` is used to create a post that can either be a parent or\nbe a response to parent post. They are threaded together using their \nunique identifier {{ post_uuid }}.\n"
     },
     {
       "name": "unpost",
       "type": "unpost",
-      "ricardian_contract": "# Action - `unpost`\n\n## Description\n\nThe intent of the `unpost` action is to suggest that a previously posted message (through the `post` action), as referred by `post_uuid`, be removed by the different front-ends reading this contract's transaction flow.\n\nI, {{ poster }} understand that this action will not remove the message from circulation, as it will be imprinted in the blockchain.  I also understand that some front-ends might not remove the message, and even highlight the fact that a message was intended to be removed, potentially attracting attention on an undesired message.\n"
+      "ricardian_contract": "# Action - `{{ unpost }}`\n\n## Description\n\nThe intent of the `unpost` action is to suggest that a previously posted message (through the `post` action), as referred by {{ post_uuid }}, be removed by the different front-ends reading this contract's transaction flow.\n\nI, {{ poster }} understand that this action will not remove the message from circulation, as it will be imprinted in the blockchain.  I also understand that some front-ends might not remove the message, and even highlight the fact that a message was intended to be removed, potentially attracting attention on an undesired message.\n"
     },
     {
       "name": "status",
       "type": "status",
-      "ricardian_contract": "# Action - `{{ status }}`\n\n## Description\n\n{{ status }} is used to record a status for the associated {{ account }}.\nIf the {{ content }} is empty, the action will remove a previous status.\nOtherwise, it will add a status entry for the {{ account }} using the\n{{ content }} received.\n"
+      "ricardian_contract": "# Action - `{{ status }}`\n\n## Description\n\n`status` is used to record a status for the associated {{ account }}.\nIf the {{ content }} is empty, the action will remove a previous status.\nOtherwise, it will add a status entry for the {{ account }} using the\n{{ content }} received.\n"
     }
   ],
   "tables": [
