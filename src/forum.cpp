@@ -23,6 +23,8 @@ void forum::propose(
     eosio_assert(title.size() < 1024, "title should be less than 1024 characters long.");
     VALIDATE_JSON(proposal_json, 32768);
 
+    eosio_assert(expires_at > time_point_sec(now()), "expires_at must be a value in the future.");
+
     // Not a perfect assertion since we are not doing real date computation, but good enough for our use case
     time_point_sec max_expires_at = time_point_sec(now() + SIX_MONTHS_IN_SECONDS);
     eosio_assert(expires_at <= max_expires_at, "expires_at must be within 6 months from now.");
