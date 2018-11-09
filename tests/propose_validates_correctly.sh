@@ -2,6 +2,7 @@
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"; source "${ROOT}/library.sh"
 
+expires_at_expired=`date -v-1S +"%Y-%m-%dT%H:%M:%S"`
 expires_at_over=`date -v+7m +"%Y-%m-%dT%H:%M:%S"`
 proposal_json_not_object="[]"
 proposal_json_too_long="{\\\\"a\\\\":\\\\"${CHARS_37500}\\\\"}"
@@ -13,6 +14,10 @@ action_ko propose proposer2@active \
 action_ko propose proposer1@active \
 "{\"proposer\":\"proposer1\", \"proposal_name\":\"provalcorr1\", \"title\":\"${CHARS_1250}\", \"proposal_json\":null, \"expires_at\":\"${EXPIRES_AT}\"}" \
 'title should be less than 1024 characters long.'
+
+action_ko propose proposer1@active \
+"{\"proposer\":\"proposer1\", \"proposal_name\":\"provalcorr1\", \"title\":\"A simple one\", \"proposal_json\":null, \"expires_at\":\"${expires_at_expired}\"}" \
+'expires_at must be a value in the future.'
 
 action_ko propose proposer1@active \
 "{\"proposer\":\"proposer1\", \"proposal_name\":\"provalcorr1\", \"title\":\"A simple one\", \"proposal_json\":null, \"expires_at\":\"${expires_at_over}\"}" \
