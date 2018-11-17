@@ -472,7 +472,7 @@ eosc forum list
 
 **Caveats** Right now, `eosc` does not support searching giving only a direct key. Instead, it really requires
 a lower and upper bound. The upper bound being exclusive, to correctly get the upper bound, take the account name
-and change the last character to the next one in the EOS name alphabet (order is `a-z0-5.`).
+and change the last character to the next one in the EOS name alphabet (order is `a-z1-5.`).
 
 So, looking for all proposals proposed by `testusertest`, the lower bound key would be `testusertest` and
 the upper bound key would be `testusertesu` (last character `t` bumped to next one `u`).
