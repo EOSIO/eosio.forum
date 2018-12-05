@@ -8,7 +8,6 @@ set +e
 container=`docker ps | grep ${CONTAINER_NAME}`
 exit_code=$?
 if [[ $exit_code != 0 ]]; then
-    echo "Container ${CONTAINER_NAME} not running, nothing to do"
     exit 0
 fi
 set -e
