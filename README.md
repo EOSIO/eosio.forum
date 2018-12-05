@@ -193,7 +193,7 @@ Propose a new proposal to the community.
 
 ##### Parameters
 
-- `proposer` (type `account_name`) - The actual proposer's account
+- `proposer` (type `name`) - The actual proposer's account
 - `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
 - `title` (type `string`) - The proposal's title (must be less than 1024 characters)
 - `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
@@ -224,7 +224,7 @@ Vote for a given proposal using your account.
 
 ##### Parameters
 
-- `voter` (type `account_name`) - The actual voter's account
+- `voter` (type `name`) - The actual voter's account
 - `proposal_name` (type `name`) - The proposal's name to vote on
 - `vote` (type `uint8`) - Your vote on the proposal, `0` means a negative vote, `1` means a positive vote
 - `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
@@ -260,7 +260,7 @@ is fully cleaned up so that every vote will be removed and RAM will be freed for
 
 ##### Parameters
 
-- `voter` (type `account_name`) - The actual voter's account
+- `voter` (type `name`) - The actual voter's account
 - `proposal_name` (type `name`) - The proposal's name to remove your vote from
 
 ##### Rejections
@@ -352,10 +352,10 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 
 ##### Parameters
 
-- `poster` (type `account_name`) - The poster's account
+- `poster` (type `name`) - The poster's account
 - `post_uuid` (type `string`) - The post `UUID` (for reply purposes)
 - `content` (type `string`) - The actual content of the post
-- `reply_to_poster` (type `account_name`) - The initial post's poster your post replies to
+- `reply_to_poster` (type `name`) - The initial post's poster your post replies to
 - `reply_to_post_uuid` (type `string`) - The initial post's `UUID` your post replies to
 - `certify` (type `bool`) - Reserved for future use
 - `json_metadata` (type `string`) - The post's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
@@ -387,7 +387,7 @@ eosc forum post poster1 "hello world"
 
 ##### Parameters
 
-- `poster` (type `account_name`) - Remove a previous post you did
+- `poster` (type `name`) - Remove a previous post you did
 - `post_uuid` (type `string`) - The `UUID` of the post to remove
 
 ##### Rejections
@@ -413,7 +413,7 @@ previous status. Otherwise, it will add a status entry for the `account` using t
 
 ##### Parameters
 
-- `account` (type `account_name`) - The account to add a status to
+- `account` (type `name`) - The account to add a status to
 - `content` (type `string`) - The content associated to the status
 
 ##### Rejections
@@ -448,7 +448,7 @@ eosc forum status voter2 ""
 
 ##### Row
 - `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
-- `proposer` (type `account_name`) - The actual proposer's account
+- `proposer` (type `name`) - The actual proposer's account
 - `title` (type `string`) - The proposal's title, a brief description of the proposal
 - `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
 - `created_at` (type `time_point_sec`) - The date at which the proposal's was created, ISO 8601 string format (in UTC) **without** a timezone modifier.
@@ -488,7 +488,7 @@ eosc forum list --from-proposer testusertest
 #### Table `status`
 
 ##### Row
-- `account` (type `account_name`) - The status' poster
+- `account` (type `name`) - The status' poster
 - `content` (type `string`) - The content of the status
 - `updated_at` (type `time_point_sec`) - The date at which the status was last updated, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
@@ -503,7 +503,7 @@ eosc get table eosforumrcpp eosforumrcpp status
 ##### Row
 - `id` (type `uint64`) - The unique ID of the `voter`/`proposal_name` pair
 - `proposal_name` (type `name`) - The `proposal_name` on which the vote applies
-- `voter` (type `account_name`) - The `voter` that voted
+- `voter` (type `name`) - The `voter` that voted
 - `vote` (type `uint8`) - The vote value of the `voter` (`0` means negative vote, `1` means a positive vote)
 - `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
 - `updated_at` (type `time_point_sec`) - The date at which the vote was last updated, ISO 8601 string format (in UTC) **without** a timezone modifier.

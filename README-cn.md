@@ -37,7 +37,7 @@
 在此冻结期内，该提案被锁定，并且不能调用任何操作（包括改投票、删除投票和清理）。
 这时间段是为了让多个工具可以查询结果以进行交叉验证的。
 一旦结束冻结期，可以通过 `clnproposal` 命令清理提案。
-`clnproposal` 命令接受 `proposal_name` 和 `max_count` 两个值。 
+`clnproposal` 命令接受 `proposal_name` 和 `max_count` 两个值。
 `clnproposal` 是按批处理的，每批删除的提案中一定数量的投票（`max_count` 变量可定义数量）。
 一旦提案中的所有投票都被删除，提案本身就会被删除。
 
@@ -54,7 +54,7 @@
 - [eosc 1.1+](https://github.com/eoscanada/eosc/releases)
 - [eos-bios 1.2+](https://github.com/eoscanada/eos-bios/releases)
 
-确保 `docker` 二进制文件、 `eosc` 还有 `eos-bios` 在 你的`PATH` 环境中是可用的。 
+确保 `docker` 二进制文件、 `eosc` 还有 `eos-bios` 在 你的`PATH` 环境中是可用的。
 需要`eos-bios` 和 `eosc` 二进制文件才能正确启动本地开发&测试节点以及运行自动化测试套件。
 
 #### 构建
@@ -66,7 +66,7 @@
 ```
 
 #### 运行
- 
+
 使用 `run.sh` 脚本轻松启动开发节点
 它会用 [eos-bios](https://github.com/eoscanada/eos-bios) 和 Docker 启动一个配置完全的沙盒 `nodeos` 开发节点：
 
@@ -180,7 +180,7 @@ constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
 
 ##### 参数
 
-- `proposer` (type `account_name`) - 提案者的账户名
+- `proposer` (type `name`) - 提案者的账户名
 - `proposal_name` (type `name`) - 提案的名称，把它与其他提案区别开来的ID
 - `title` (type `string`) - 提案的标题 (必须少于1024个字符)
 - `proposal_json` (type `string`) - 提案的 JSON 元数据，还没有具体规格，请见[JSON结构指南](#json-structure-guidelines)
@@ -214,7 +214,7 @@ eosc forum propose proposer1 example "The title, for list views" 2019-01-30T17:0
 
 ##### 参数
 
-- `voter` (type `account_name`) - 投票者账户
+- `voter` (type `name`) - 投票者账户
 - `proposal_name` (type `name`) - 被投票的提案名称
 - `vote` (type `uint8`) - 你对该提案的投票，“0”表示反对，“1”表示同意
 - `vote_json` (type `string`) - 投票的 JSON 元数据，还没有具体规格，请见[JSON结构指南](#json-structure-guidelines)
@@ -241,7 +241,7 @@ eosc forum vote voter1 example 0
 
 #### Action `unvote`
 
-删除当前的有效投票，有效地赎回存储投票的RAM。 
+删除当前的有效投票，有效地赎回存储投票的RAM。
 当然，你的的投票将不再被统计到当前提案中（无论是同意还是反对票）。
 
 对于已过期且在其3天的冻结期的提案，是不可能 `unvote` 的。
@@ -250,7 +250,7 @@ eosc forum vote voter1 example 0
 
 ##### 参数
 
-- `voter` (type `account_name`) - 投票者账户
+- `voter` (type `name`) - 投票者账户
 - `proposal_name` (type `name`) - 想从中删除你的投票的提案名称
 
 ##### 拒绝情况
@@ -348,10 +348,10 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 
 ##### 参数
 
-- `poster` (type `account_name`) - 发帖的账户
+- `poster` (type `name`) - 发帖的账户
 - `post_uuid` (type `string`) - 帖子的 `UUID` (用来回复)
 - `content`（type`string`） - 帖子的实际内容
-- `reply_to_poster`（type` account_name`） - 你的帖子所回复的原帖的版主
+- `reply_to_poster`（type` name`） - 你的帖子所回复的原帖的版主
 - `reply_to_post_uuid`（type`string`） - 你的帖子所回复的原帖的 UUID
 - `certify`（type` bool`） - 供将来使用
 - `json_metadata`（type`string`） - 帖子的JSON元数据，还没有规范，请见[JSON结构指南](#json-structure-guidelines)
@@ -387,7 +387,7 @@ eosc forum post poster1 "hello world"
 
 ##### 参数
 
-- `poster` (type `account_name`) - 删除你之前发布的帖子
+- `poster` (type `name`) - 删除你之前发布的帖子
 - `post_uuid` (type `string`) - 要删除帖子的 `UUID`
 
 ##### 拒绝情况
@@ -414,7 +414,7 @@ eosc forum unpost poster1 [UUID_of_example]
 
 ##### 参数
 
-- `account` (type `account_name`) - 添加状态的账户
+- `account` (type `name`) - 添加状态的账户
 - `content` (type `string`) - 状态的内容
 
 ##### 拒绝情况
@@ -452,7 +452,7 @@ eosc forum status voter2 ""
 ##### 行
 
 - `proposal_name`（type`name`） - 提案的名称，它的ID
-- `proposed`（type` account_name`） - 发出提案的帐户
+- `proposer`（type` name`） - 发出提案的帐户
 - `title`（type`string`） - 提案的标题，提案的简要说明
 - `proposal_json`（type`tring`） - 元数据的JSON提议，尚无规范，请见[JSON结构指南](#json-structure-guidelines)
 - `created_at`（type` time_point_sec`） - 创建提案的日期，ISO 8601字符串格式（UTC）**不含**时区修饰符。
@@ -474,7 +474,7 @@ eosc forum list
 
 ##### 示例 （读取某个提案者的所有提案）：
 
-**警告**现在，`eosc` 不支持只用一个直接的key搜索。 
+**警告**现在，`eosc` 不支持只用一个直接的key搜索。
 相反，它需要一个下限和上限。 上限是独有的，
 要正确获取上限，请把帐户名称的最后一个字符更改为EOS名称字母表中的下一个字符（顺序为`a-z1-5`）
 
@@ -495,7 +495,7 @@ eosc forum list --from-proposer testusertest
 
 ##### 行
 
-- `account`（type `account_name`） - 状态的发布者
+- `account`（type `name`） - 状态的发布者
 - `content`（type `tring`） - 状态的内容
 - `updated_at`（type `time_point_sec`） - 状态上次更新的日期，ISO 8601字符串格式（UTC）**不含**时区修饰符。
 
@@ -513,7 +513,7 @@ eosc get table eosforumrcpp eosforumrcpp status
 
 - `id`（type `uint64`） - 一对 `voter` 和 `proposal_name` 相对应的特殊ID
 - `proposal_name`（type`name`） - 投票相对应的 `proposal_name`
-- “voter”（type`account_name`） - 投票的 `voter`
+- “voter”（type`name`） - 投票的 `voter`
 - `vote`（type`uint8`） - `voter` 的投票值（“0”表示反对票，“1”表示票）
 - `vote_json`（type`字符串`） - 投票的JSON元数据，还没有规范，请见[JSON结构指南](#json-structure-guidelines)
 - `updated_at`（type`time_point_sec`） - 上次更新投票的日期，ISO 8601字符串格式（UTC）**不含**时区修饰符。

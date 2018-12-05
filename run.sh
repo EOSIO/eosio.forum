@@ -4,7 +4,7 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd tests && pwd )"
 
 CONTAINER_NAME=${CONTAINER_NAME:-"nodeos-eosio.forum"}
 NODEOS_CONTAINER=${NODEOS_CONTAINER:-"eosio/eos"}
-NODEOS_VERSION=${NODEOS_VERSION:-"v1.4.1"}
+NODEOS_VERSION=${NODEOS_VERSION:-"v1.4.4"}
 
 image_id="${NODEOS_CONTAINER}:${NODEOS_VERSION}"
 
