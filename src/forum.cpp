@@ -8,11 +8,11 @@
     #Variable " should be shorter than " #MAX_SIZE " bytes."\
 )
 
-EOSIO_ABI(forum, (propose)(expire)(vote)(unvote)(clnproposal)(post)(unpost)(status))
+EOSIO_DISPATCH(forum, (propose)(expire)(vote)(unvote)(clnproposal)(post)(unpost)(status))
 
-// @abi
+[[eosio::action]]
 void forum::propose(
-    const account_name proposer,
+    const name proposer,
     const name proposal_name,
     const string& title,
     const string& proposal_json,
@@ -29,8 +29,8 @@ void forum::propose(
     time_point_sec max_expires_at = time_point_sec(now() + SIX_MONTHS_IN_SECONDS);
     eosio_assert(expires_at <= max_expires_at, "expires_at must be within 6 months from now.");
 
-    proposals proposal_table(_self, _self);
-    eosio_assert(proposal_table.find(proposal_name) == proposal_table.end(), "proposal with same name already exists.");
+    proposals proposal_table(_self, _self.value);
+    eosio_assert(proposal_table.find(proposal_name.value) == proposal_table.end(), "proposal with same name already exists.");
 
     proposal_table.emplace(proposer, [&](auto& row) {
         row.proposal_name = proposal_name;
@@ -42,10 +42,10 @@ void forum::propose(
     });
 }
 
-// @abi
+[[eosio::action]]
 void forum::expire(const name proposal_name) {
-    proposals proposal_table(_self, _self);
-    auto itr = proposal_table.find(proposal_name);
+    proposals proposal_table(_self, _self.value);
+    auto itr = proposal_table.find(proposal_name.value);
 
     eosio_assert(itr != proposal_table.end(), "proposal not found.");
     eosio_assert(!itr->is_expired(), "proposal is already expired.");
@@ -58,43 +58,43 @@ void forum::expire(const name proposal_name) {
     });
 }
 
-// @abi
+[[eosio::action]]
 void forum::vote(
-    const account_name voter,
+    const name voter,
     const name proposal_name,
     uint8_t vote,
     const string& vote_json
 ) {
     require_auth(voter);
 
-    proposals proposal_table(_self, _self);
-    auto& row = proposal_table.get(proposal_name, "proposal_name does not exist.");
+    proposals proposal_table(_self, _self.value);
+    auto& row = proposal_table.get(proposal_name.value, "proposal_name does not exist.");
 
     eosio_assert(!row.is_expired(), "cannot vote on an expired proposal.");
 
     VALIDATE_JSON(vote_json, 8192);
 
-    votes vote_table(_self, _self);
+    votes vote_table(_self, _self.value);
     update_vote(vote_table, proposal_name, voter, [&](auto& row) {
         row.vote = vote;
         row.vote_json = vote_json;
     });
 }
 
-// @abi
-void forum::unvote(const account_name voter, const name proposal_name) {
+[[eosio::action]]
+void forum::unvote(const name voter, const name proposal_name) {
     require_auth(voter);
 
-    proposals proposal_table(_self, _self);
-    auto& row = proposal_table.get(proposal_name, "proposal_name does not exist.");
+    proposals proposal_table(_self, _self.value);
+    auto& row = proposal_table.get(proposal_name.value, "proposal_name does not exist.");
 
     if (row.is_expired()) {
         eosio_assert(row.can_be_cleaned_up(), "cannot unvote on an expired proposal within its freeze period.");
     }
 
-    votes vote_table(_self, _self);
+    votes vote_table(_self, _self.value);
 
-    auto index = vote_table.template get_index<N(byproposal)>();
+    auto index = vote_table.template get_index<"byproposal"_n>();
     auto vote_key = compute_by_proposal_key(proposal_name, voter);
 
     auto itr = index.find(vote_key);
@@ -112,21 +112,20 @@ void forum::unvote(const account_name voter, const name proposal_name) {
  *
  * In all cases it's ok to let anyone clean the votes since there is no more "use"
  * for the proposal nor the votes.
- *
- * @abi
  */
+[[eosio::action]]
 void forum::clnproposal(const name proposal_name, uint64_t max_count) {
-    proposals proposal_table(_self, _self);
+    proposals proposal_table(_self, _self.value);
 
-    auto itr = proposal_table.find(proposal_name);
+    auto itr = proposal_table.find(proposal_name.value);
     eosio_assert(itr == proposal_table.end() || itr->can_be_cleaned_up(),
                  "proposal must not exist or be expired for at least 3 days prior to running clnproposal.");
 
-    votes vote_table(_self, _self);
-    auto index = vote_table.template get_index<N(byproposal)>();
+    votes vote_table(_self, _self.value);
+    auto index = vote_table.template get_index<"byproposal"_n>();
 
-    auto vote_key_lower_bound = compute_by_proposal_key(proposal_name, 0x0000000000000000);
-    auto vote_key_upper_bound = compute_by_proposal_key(proposal_name, 0xFFFFFFFFFFFFFFFF);
+    auto vote_key_lower_bound = compute_by_proposal_key(proposal_name, name(0x0000000000000000));
+    auto vote_key_upper_bound = compute_by_proposal_key(proposal_name, name(0xFFFFFFFFFFFFFFFF));
 
     auto lower_itr = index.lower_bound(vote_key_lower_bound);
     auto upper_itr = index.upper_bound(vote_key_upper_bound);
@@ -143,12 +142,12 @@ void forum::clnproposal(const name proposal_name, uint64_t max_count) {
     }
 }
 
-// @abi
+[[eosio::action]]
 void forum::post(
-    const account_name poster,
+    const name poster,
     const string& post_uuid,
     const string& content,
-    const account_name reply_to_poster,
+    const name reply_to_poster,
     const string& reply_to_post_uuid,
     const bool certify,
     const string& json_metadata
@@ -161,7 +160,7 @@ void forum::post(
     eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 characters.");
     eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 
-    if (reply_to_poster == 0) {
+    if (reply_to_poster.value == 0) {
         eosio_assert(reply_to_post_uuid.size() == 0, "If reply_to_poster is not set, reply_to_post_uuid should not be set.");
     } else {
         eosio_assert(is_account(reply_to_poster), "reply_to_poster must be a valid account.");
@@ -172,24 +171,24 @@ void forum::post(
     VALIDATE_JSON(json_metadata, 8192);
 }
 
-// @abi
-void forum::unpost(const account_name poster, const string& post_uuid) {
+[[eosio::action]]
+void forum::unpost(const name poster, const string& post_uuid) {
     require_auth(poster);
 
     eosio_assert(post_uuid.size() > 0, "post_uuid should be longer than 0 characters.");
     eosio_assert(post_uuid.size() < 128, "post_uuid should be shorter than 128 characters.");
 }
 
-// @abi
-void forum::status(const account_name account, const string& content) {
+[[eosio::action]]
+void forum::status(const name account, const string& content) {
     require_auth(account);
 
     eosio_assert(content.size() < 256, "content should be less than 256 characters.");
 
-    statuses status_table(_self, _self);
+    statuses status_table(_self, _self.value);
 
     if (content.size() == 0) {
-        auto& row = status_table.get(account, "no previous status entry for this account.");
+        auto& row = status_table.get(account.value, "no previous status entry for this account.");
         status_table.erase(row);
     } else {
         update_status(status_table, account, [&](auto& row) {
@@ -202,10 +201,10 @@ void forum::status(const account_name account, const string& content) {
 
 void forum::update_status(
     statuses& status_table,
-    const account_name account,
+    const name account,
     const function<void(status_row&)> updater
 ) {
-    auto itr = status_table.find(account);
+    auto itr = status_table.find(account.value);
     if (itr == status_table.end()) {
         status_table.emplace(account, [&](auto& row) {
             row.account = account;
@@ -223,10 +222,10 @@ void forum::update_status(
 void forum::update_vote(
     votes& vote_table,
     const name proposal_name,
-    const account_name voter,
+    const name voter,
     const function<void(vote_row&)> updater
 ) {
-    auto index = vote_table.template get_index<N(byproposal)>();
+    auto index = vote_table.template get_index<"byproposal"_n>();
     auto vote_key = compute_by_proposal_key(proposal_name, voter);
 
     auto itr = index.find(vote_key);
