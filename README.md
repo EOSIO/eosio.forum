@@ -143,24 +143,18 @@ executes all the integration tests found in `tests` folder (see [all.sh](./tests
 for exact files picked up).
 
 To correctly run the tests, you will need to switch the freeze period of
-a proposal for 2 seconds (waiting 3 days could be a bit too long!)
-
-In the file [include/forum.hpp](./include/forum.hpp), change the line:
-
-```
-constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 3 * 24 * 60 * 60;
-```
-
-So it looks like this instead:
+a proposal for 2 seconds (waiting 3 days could be a bit too long!). The `tests.sh`
+script takes also care of this changing the freeze period automatically for you
+to 2 seconds so it looks like this instead when the tests runs:
 
 ```
 constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
 ```
 
-The `test.sh` script refuses to run if the string is not found in the file.
-
-**Important** Be 100% sure to revert back the changes, you would not like to
-push a freeze period of 2 seconds in the repository!
+**Important** The `tests.sh` script automatically revert back the changes once the
+test script finishes (either in error or successfully). You should check just in case
+before sending your changes to be 100% sure that changes were effectively reverted back.
+You would not like to push a freeze period of 2 seconds in the repository!
 
 ### Deployment
 
