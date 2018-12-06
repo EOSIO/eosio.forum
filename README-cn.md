@@ -125,25 +125,16 @@ export EOSC_GLOBAL_VAULT_FILE ="`pwd` / tests / eosc-vault.json"
 这将启动 `nodeos` 开发节点（通过 `./run.sh`），
 然后执行 `tests` 文件夹中的所有集成测试（想知道拾取的具体文件，请参见 [all.sh](./tests/all.sh)）。
 
-正确运行测试，你需要要把提案冻结期切换为2秒
-（不然你等3天有点太长了！）
-
-在文件 [include/forum.hpp](./include/forum.hpp) 中，把下面这行：
-
-```
-constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 3 * 24 * 60 * 60;
-```
-
-改成这样：
+想正确运行测试，你需要要把提案冻结期切换为2秒
+（不然你等3天有点太长了！）。`tests.sh` 脚本也会自动将这个冻结周期自动更改为2秒，
+所以当你测试运行时它是这样的：
 
 ```
 constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
 ```
 
-如果在文件中找不到该字符串，`test.sh` 脚本会拒绝运行。
-
-**注意** 要100％确定结束后还原设定，
-别把一个只有2秒的冻结期的推送到库中！
+**注意** 一旦测试脚本完成，不管是结果报错还是成功，`tests.sh` 脚本会自动恢复更改。 
+在发送更改之前，以防万一，你还是应该检查更改是否被有效地还原了，别让一个只有2秒的冻结期的推送到库中！
 
 -------------------------
 
