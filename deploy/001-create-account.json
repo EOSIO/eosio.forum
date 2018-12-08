@@ -1,0 +1,47 @@
+{"chain_id":"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+  "expiration": "2018-12-23T21:03:26",
+  "ref_block_num": 6595,
+  "ref_block_prefix": 1676839884,
+  "max_net_usage_words": 0,
+  "max_cpu_usage_ms": 0,
+  "delay_sec": 0,
+  "context_free_actions": [],
+  "actions": [
+    {
+      "account": "eosio",
+      "name": "newaccount",
+      "authorization": [
+        {
+          "actor": "eosio",
+          "permission": "active"
+        }
+      ],
+      "data": "0000000000ea305500a4be7401ea30550100000000010000000000ea305500000000a8ed32320100000100000000010000000000ea305500000000a8ed3232010000"
+    },
+    {
+      "account": "eosio",
+      "name": "delegatebw",
+      "authorization": [
+        {
+          "actor": "eosio",
+          "permission": "active"
+        }
+      ],
+      "data": "0000000000ea305500a4be7401ea3055000000000000000004454f5300000000000000000000000004454f530000000000"
+    },
+    {
+      "account": "eosio",
+      "name": "buyrambytes",
+      "authorization": [
+        {
+          "actor": "eosio",
+          "permission": "active"
+        }
+      ],
+      "data": "0000000000ea305500a4be7401ea305500b00400"
+    }
+  ],
+  "transaction_extensions": [],
+  "signatures": [],
+  "context_free_data": []
+}

@@ -1,0 +1,14 @@
+owner:
+  threshold: 1
+  accounts:
+  - permission:
+      actor: eosio
+      permission: active
+    weight: 1
+active:
+  threshold: 1
+  accounts:
+  - permission:
+      actor: eosio
+      permission: active
+    weight: 1
