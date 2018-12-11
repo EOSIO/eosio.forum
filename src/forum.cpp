@@ -20,6 +20,7 @@ void forum::propose(
 ) {
     require_auth(proposer);
 
+    eosio_assert(proposal_name.length() > 2, "proposal name should be at least 3 characters long.");
     eosio_assert(title.size() < 1024, "title should be less than 1024 characters long.");
     VALIDATE_JSON(proposal_json, 32768);
 
