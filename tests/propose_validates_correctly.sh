@@ -12,6 +12,14 @@ action_ko propose proposer2@active \
 'missing authority of proposer1'
 
 action_ko propose proposer1@active \
+"{\"proposer\":\"proposer1\", \"proposal_name\":\"\", \"title\":\"A simple one\", \"proposal_json\":null, \"expires_at\":\"${EXPIRES_AT}\"}" \
+'proposal name should be at least 3 characters long.'
+
+action_ko propose proposer1@active \
+"{\"proposer\":\"proposer1\", \"proposal_name\":\"ab\", \"title\":\"A simple one\", \"proposal_json\":null, \"expires_at\":\"${EXPIRES_AT}\"}" \
+'proposal name should be at least 3 characters long.'
+
+action_ko propose proposer1@active \
 "{\"proposer\":\"proposer1\", \"proposal_name\":\"provalcorr1\", \"title\":\"${CHARS_1250}\", \"proposal_json\":null, \"expires_at\":\"${EXPIRES_AT}\"}" \
 'title should be less than 1024 characters long.'
 
