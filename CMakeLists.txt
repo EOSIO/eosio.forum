@@ -1,7 +1,7 @@
 find_package(eosio.cdt)
 
 cmake_minimum_required(VERSION 3.5)
-project(eosio.forum VERSION 1.0.0)
+project(eosio.forum VERSION 1.0.1)
 
 add_contract(forum forum src/forum.cpp)
 
