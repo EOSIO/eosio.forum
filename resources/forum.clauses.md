@@ -1,3 +1,11 @@
+<h1 class="clause">Vote Tallying Parameters</h1>
+
+A `vote` cast through this contract shall have its weight determined by the staked value on the `voters` table. It shall not be subject to any vote strength calculation (as in `last_vote_weight` for example). 
+
+A `vote` cast through a proxy shall have a weight equal to the sum of its staked value on the `voters` table, as well as all accounts proxying their `vote` towards said proxy. If one of the accounts proxying their weight towards a proxy's account should also cast a `vote` on the same proposal, then their weight shall be deducted from the proxy's weight. 
+
+The weight of a `vote` shall be updated based on the changes to the staked value of the account on the `voters` table.
+
 <h1 class="clause">Parameters</h1>
 Implied parameters:
 
