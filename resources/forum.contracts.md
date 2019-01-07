@@ -23,8 +23,7 @@ action can be processed within a single block's maximum allowable limits.
 
 `expire` can only be called by {{ proposer }}.
 
-`expire` is used to modify the value of `expires_at` to the new time {{ expires_at }}. Once `expire` has been called,
-no more votes will be accepted for {{ proposal_name }}.
+`expire` is used to modify the value of `expires_at` to the current time at which the action is called. Once `expire` has been called, no more `vote` actions will be accepted for {{ proposal_name }}. {{ proposal_name }} can be cleared from RAM 72 hours after {{ proposer }} has called the `expire` action.
 
 <h1 class="contract">post</h1>
 
@@ -83,22 +82,13 @@ after `unvote` has been called by {{ voter }}.
 
 ## Description
 
-A user is able to cast a vote by associating it to {{ proposal_name }}. To
-change a vote, a {{ voter }} only needs to call another `vote` action - only the
-most recent vote of {{ vote_value }} by {{ voter }} will be considered as valid . A user
-could also use `unvote` to override their previous `vote`.
+I, {{ voter }}, am casting a vote of {{ vote_value }} on {{ proposal_name }}. To change my vote, I may call another `vote` action, with only the most recent `vote` of {{ vote_value }} being the `vote` which I, {{ voter }}, intend to be considered as valid. I acknowledge that using the `unvote` action after placing a `vote` will render my previous `vote` of {{ vote_value }} null and void. 
 
-If I, {{ voter }}, am not the beneficial owner of these tokens, I stipulate I have proof
-that I’ve been authorized to vote these tokens by their beneficial owner(s).
+If I, {{ voter }}, have a proxy registered for my on-chain voting, my own `vote` of {{ vote_value }} shall take  precedence over my proxy's `vote`. My stake weight shall be deducted from their voting power and cast as my own. 
 
-A user who has a proxy set on their account will be providing implicit consent
-for that proxy to `vote` on their behalf. A user who has a designated proxy
-may choose to also cast a `vote`, which will override the delegation of voting
-authority to that proxy.
+If I, {{ voter }}, am not the beneficial owner of these tokens, I stipulate I have proof that I’ve been authorized to vote these tokens by their beneficial owner(s).
 
-I stipulate I have not and will not accept anything of value in exchange for these
-votes, on penalty of confiscation of these tokens, and other penalties.
+If I, {{ voter }}, am registered as a proxy and am casting votes on behalf of other users of the blockchain, I acknowledge that I am doing so on their behalf and that they may at any time withdraw their stake weight from my voting power by casting their own `vote` or removing my account as their proxy.
 
-Any disputes arising out of use of this contract shall be ruled under the Rules
-for Dispute Resolution of the EOS Core Arbitration Forum by one or more arbitrators
-appointed in accordance with said Rules.
+I, {{ voter }}, stipulate I have not and will not accept anything of value in exchange for this `vote`, on penalty of confiscation of these tokens, and other penalties.
+
