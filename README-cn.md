@@ -75,7 +75,7 @@
 ```
 
 这会创建以下帐户：
-- `eosforumrcpp`
+- `eosio.forum`
 - `proposer1`
 - `proposer2`
 - `poster1`
@@ -133,7 +133,7 @@ export EOSC_GLOBAL_VAULT_FILE ="`pwd` / tests / eosc-vault.json"
 constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
 ```
 
-**注意** 一旦测试脚本完成，不管是结果报错还是成功，`tests.sh` 脚本会自动恢复更改。 
+**注意** 一旦测试脚本完成，不管是结果报错还是成功，`tests.sh` 脚本会自动恢复更改。
 在发送更改之前，以防万一，你还是应该检查更改是否被有效地还原了，别让一个只有2秒的冻结期的推送到库中！
 
 -------------------------
@@ -142,11 +142,6 @@ constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
 
 此代码的最新版本在EOS主网的 `eosforumrcpp` 帐户上
 和EOS Kylin测试网的 `cancancan345` 帐户上。
-
-最初支持此合约的工具是：
-- [eosc](https://github.com/eoscanada/eosc) 命令行界面，可提交提案、帖子和投票。
-- [EOS ToolKit Forum Post](https://www.myeoskit.com/tools/referendums) 允许你通过此合约发布内容。
-- MyEOSKit 已经为 `post` 操作提供了特殊的套管。 请见 [此交易](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0)。
 
 --------------------------
 
@@ -188,7 +183,7 @@ constexpr static uint32_t FREEZE_PERIOD_IN_SECONDS = 2; // NEVER MERGE LIKE THIS
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
+eosc tx create eosio.forum propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
 ```
 或
 
@@ -221,7 +216,7 @@ eosc forum propose proposer1 example "The title, for list views" 2019-01-30T17:0
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
+eosc tx create eosio.forum vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
 ```
 或
 ```
@@ -253,7 +248,7 @@ eosc forum vote voter1 example 0
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
+eosc tx create eosio.forum unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
 ```
 或
 ```
@@ -279,7 +274,7 @@ eosc forum unvote voter1 example
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp expire '{"proposal_name": "example"}' -p proposer1@active
+eosc tx create eosio.forum expire '{"proposal_name": "example"}' -p proposer1@active
 ```
 或
 ```
@@ -324,7 +319,7 @@ eosc forum expire proposer1 example
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
+eosc tx create eosio.forum clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
 ```
 或
 ```
@@ -363,7 +358,7 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
+eosc tx create eosio.forum post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
 ```
 或
 ```
@@ -390,7 +385,7 @@ eosc forum post poster1 "hello world"
 ##### 例如
 
 ```
-eosc tx create eosforumrcpp unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
+eosc tx create eosio.forum unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
 ```
 或
 ```
@@ -417,13 +412,13 @@ eosc forum unpost poster1 [UUID_of_example]
 例如（添加状态）：
 
 ```
-eosc tx create eosforumrcpp status '{"account": "voter2", "content":"status of something"}' -p voter2@active
+eosc tx create eosio.forum status '{"account": "voter2", "content":"status of something"}' -p voter2@active
 ```
 
 例如（移除之前的状态）：
 
 ```
-eosc tx create eosforumrcpp status '{"account": "voter2", "content":""}' -p voter2@active
+eosc tx create eosio.forum status '{"account": "voter2", "content":""}' -p voter2@active
 ```
 或
 ```
@@ -456,7 +451,7 @@ eosc forum status voter2 ""
 ##### 示例 (读取所有的提案):
 
 ```
-eosc get table eosforumrcpp eosforumrcpp proposal
+eosc get table eosio.forum eosio.forum proposal
 ```
 或
 ```
@@ -473,7 +468,7 @@ eosc forum list
 上限key是 `testusertesu`（最后一个字符`t`的下一个字母是`u`）。
 
 ```
-eosc get table eosforumrcpp eosforumrcpp proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
+eosc get table eosio.forum eosio.forum proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
 ```
 或
 ```
@@ -493,7 +488,7 @@ eosc forum list --from-proposer testusertest
 ##### 示例
 
 ```
-eosc get table eosforumrcpp eosforumrcpp status
+eosc get table eosio.forum eosio.forum status
 ```
 
 -------------------------
@@ -517,7 +512,7 @@ eosc get table eosforumrcpp eosforumrcpp status
 ##### 示例（读取所有的投票）：
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote
+eosc get table eosio.forum eosio.forum vote
 ```
 
 ##### 示例（读取某个提案下的所有的投票）:
@@ -547,7 +542,7 @@ eosc get table eosforumrcpp eosforumrcpp vote
 
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
+eosc get table eosio.forum eosio.forum vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
 ```
 
 你只会看到针对提议 `ramusetest` 的投票。
@@ -578,7 +573,7 @@ eosc get table eosforumrcpp eosforumrcpp vote --index 2 --key-type i128 --lower-
 
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
+eosc get table eosio.forum eosio.forum vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
 ```
 
 这样你就能只看到选民 `testusertest` 所投过的所有提案。

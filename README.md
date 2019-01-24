@@ -87,7 +87,7 @@ fully configured sandboxed `nodeos` development node:
 ```
 
 This creates the following accounts:
-- `eosforumrcpp`
+- `eosio.forum`
 - `proposer1`
 - `proposer2`
 - `poster1`
@@ -158,15 +158,16 @@ You would not like to push a freeze period of 2 seconds in the repository!
 
 ### Deployment
 
-The latest version of this code lives on the `eosforumrcpp` account on
-the EOS Mainnet and on the `cancancan345` account on the EOS Kylin network.
+The latest version of this code lives on the `eosio.forum` account on
+the EOS Mainnet.
 
-Tools that initially integrated support for this contract are:
-- [eosc](https://github.com/eoscanada/eosc) has a command-line interface
-  implementation to submit posts and votes.
-- [EOS ToolKit Forum Post](https://www.myeoskit.com/tools/referendums) allows you to post content through this contract.
-- MyEOSKit already has special casing for the `post` actions. See
-  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
+There is also a few accounts that were used for development purposes
+as well as for testing updates to the contract. Here the list with some
+details about the status:
+- `eosforumrcpp` on EOS Mainnet (status: `release candidates`)
+- `cancancan345` on Kylin network (status: `unmaintained`)
+- `cancancan123` on Kylin network (status: `unmaintained`)
+- `eosforumdapp` on EOS Mainnet (status: `unmaintained`)
 
 ### Reference
 
@@ -204,7 +205,7 @@ Propose a new proposal to the community.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
+eosc tx create eosio.forum propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
 ```
 OR
 
@@ -233,7 +234,7 @@ Vote for a given proposal using your account.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
+eosc tx create eosio.forum vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
 ```
 OR
 ```
@@ -266,7 +267,7 @@ is fully cleaned up so that every vote will be removed and RAM will be freed for
 ##### Example
 
 ```
-eosc tx create eosforumrcpp unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
+eosc tx create eosio.forum unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
 ```
 OR
 ```
@@ -291,7 +292,7 @@ that created it. It's not valid to expire an already expired proposal.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp expire '{"proposal_name": "example"}' -p proposer1@active
+eosc tx create eosio.forum expire '{"proposal_name": "example"}' -p proposer1@active
 ```
 OR
 ```
@@ -335,7 +336,7 @@ fails due to excessive CPU usage. Find the sweet spot to avoid that.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
+eosc tx create eosio.forum clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
 ```
 OR
 ```
@@ -370,7 +371,7 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 ##### Example
 
 ```
-eosc tx create eosforumrcpp post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
+eosc tx create eosio.forum post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
 ```
 OR
 ```
@@ -393,7 +394,7 @@ eosc forum post poster1 "hello world"
 ##### Example
 
 ```
-eosc tx create eosforumrcpp unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
+eosc tx create eosio.forum unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
 ```
 OR
 ```
@@ -419,13 +420,13 @@ previous status. Otherwise, it will add a status entry for the `account` using t
 Example (add status):
 
 ```
-eosc tx create eosforumrcpp status '{"account": "voter2", "content":"status of something"}' -p voter2@active
+eosc tx create eosio.forum status '{"account": "voter2", "content":"status of something"}' -p voter2@active
 ```
 
 Example (remove previous status):
 
 ```
-eosc tx create eosforumrcpp status '{"account": "voter2", "content":""}' -p voter2@active
+eosc tx create eosio.forum status '{"account": "voter2", "content":""}' -p voter2@active
 ```
 OR
 ```
@@ -455,7 +456,7 @@ eosc forum status voter2 ""
 ##### Example (get all proposals):
 
 ```
-eosc get table eosforumrcpp eosforumrcpp proposal
+eosc get table eosio.forum eosio.forum proposal
 ```
 OR
 ```
@@ -472,7 +473,7 @@ So, looking for all proposals proposed by `testusertest`, the lower bound key wo
 the upper bound key would be `testusertesu` (last character `t` bumped to next one `u`).
 
 ```
-eosc get table eosforumrcpp eosforumrcpp proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
+eosc get table eosio.forum eosio.forum proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
 ```
 OR
 ```
@@ -489,7 +490,7 @@ eosc forum list --from-proposer testusertest
 ##### Example
 
 ```
-eosc get table eosforumrcpp eosforumrcpp status
+eosc get table eosio.forum eosio.forum status
 ```
 
 #### Table `vote`
@@ -510,7 +511,7 @@ eosc get table eosforumrcpp eosforumrcpp status
 ##### Example (get all votes):
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote
+eosc get table eosio.forum eosio.forum vote
 ```
 
 ##### Example (get all votes for a given proposal):
@@ -542,7 +543,7 @@ Here are the steps to compute the lower/upper bounds for the table query:
 Now that we have the lower and upper bound keys, simply perform your query:
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
+eosc get table eosio.forum eosio.forum vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
 ```
 
 You will see only the votes against the proposal `ramusetest`.
@@ -576,7 +577,7 @@ Here the steps to compute the lower/upper bounds for the table query:
 Now that we have the lower and upper bound keys, simply perform your query:
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote --index 3 --key-type i128 --lower-bound 0x000000000000000090b1ca57619db1ca --upper-bound 0xffffffffffffffff90b1ca57619db1ca
+eosc get table eosio.forum eosio.forum vote --index 3 --key-type i128 --lower-bound 0x000000000000000090b1ca57619db1ca --upper-bound 0xffffffffffffffff90b1ca57619db1ca
 ```
 
 You will see only the proposals that voter `testusertest` voted for.
