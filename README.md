@@ -191,7 +191,7 @@ Propose a new proposal to the community.
 - `proposer` (type `name`) - The actual proposer's account
 - `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
 - `title` (type `string`) - The proposal's title (must be less than 1024 characters)
-- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [Proposal JSON Structure](#proposal-json-structure-guidelines)
 - `expires_at` (type `time_point_sec`) - The expiration date of the proposal, must be no later than 6 months in the future, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
 ##### Rejections
@@ -222,7 +222,7 @@ Vote for a given proposal using your account.
 - `voter` (type `name`) - The actual voter's account
 - `proposal_name` (type `name`) - The proposal's name to vote on
 - `vote` (type `uint8`) - Your vote on the proposal, `0` means a negative vote, `1` means a positive vote
-- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [General JSON Structure Guidelines](#general-json-structure-guidelines)
 
 ##### Rejections
 
@@ -353,7 +353,7 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 - `reply_to_poster` (type `name`) - The initial post's poster your post replies to
 - `reply_to_post_uuid` (type `string`) - The initial post's `UUID` your post replies to
 - `certify` (type `bool`) - Reserved for future use
-- `json_metadata` (type `string`) - The post's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `json_metadata` (type `string`) - The post's JSON metadata, no specification yet, see [General JSON Structure Guidelines](#general-json-structure-guidelines)
 
 ##### Rejections
 
@@ -445,7 +445,7 @@ eosc forum status voter2 ""
 - `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
 - `proposer` (type `name`) - The actual proposer's account
 - `title` (type `string`) - The proposal's title, a brief description of the proposal
-- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [Proposal JSON Structure Guidelines](#proposal-json-structure-guidelines)
 - `created_at` (type `time_point_sec`) - The date at which the proposal's was created, ISO 8601 string format (in UTC) **without** a timezone modifier.
 - `expires_at` (type `time_point_sec`) - The date at which the proposal's will expire, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
@@ -500,7 +500,7 @@ eosc get table eosio.forum eosio.forum status
 - `proposal_name` (type `name`) - The `proposal_name` on which the vote applies
 - `voter` (type `name`) - The `voter` that voted
 - `vote` (type `uint8`) - The vote value of the `voter` (`0` means negative vote, `1` means a positive vote)
-- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [General JSON Structure Guidelines](#general-json-structure-guidelines)
 - `updated_at` (type `time_point_sec`) - The date at which the vote was last updated, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
 ##### Indexes
@@ -582,26 +582,36 @@ eosc get table eosio.forum eosio.forum vote --index 3 --key-type i128 --lower-bo
 
 You will see only the proposals that voter `testusertest` voted for.
 
-#### JSON Structure Guidelines
+#### Proposal JSON Structure Guidelines
 
-You can use any vocabulary you want when creating posts, proposals and
-votes, there is no specification yet for the JSON. However, by following
+The `proposal_json` should be structured against the EOS Enhancement Proposal 4
+([EEP-4](https://eeps.io/EEPS/eep-4)) which describes how the `proposal_json`
+field should be structured based on a predefined set of proposal types.
+
+While it's not strictly required to follow the guidelines in [EEP-4](https://eeps.io/EEPS/eep-4),
+it's strongly suggested to do so as UI, vote tallies and related tools
+use the guidelines in [EEP-4](https://eeps.io/EEPS/eep-4) to provide their
+services.
+
+If you decide to not follow the guidelines and instead create you own type(s),
+it's highly encouraged to have a `type` field in your JSON string describing
+your proposal type. Be sure that it does not collapse with the ones defined in
+[EEP-4](https://eeps.io/EEPS/eep-4).
+
+Of course, if you think your new type could be beneficial to the broader
+community of EOS, you are invited to submit changes to [EEP-4](https://eeps.io/EEPS/eep-4)
+via a GitHub pull request on the [EEP Repository](https://github.com/eoscanada/eeps).
+
+#### General JSON Structure Guidelines
+
+You can use any vocabulary you want when creating posts and votes, there
+is no specification yet for the JSON of those actions. However, by following
 some simple guidelines, you can simplify your life and the life of those
 building UIs around these messages.
 
-For all `json` prefixed or suffixed fields in `propose`, `vote` and
+For all `json` prefixed or suffixed fields in `vote` and
 `post`, the `type` field should determine a higher order protocol, and
 determines what other sibling fields will be required.
-
-##### In a `propose`'s `proposal_json` field
-
-* `type` is a required field to distinguish protocol. See types in the section below.
-
-* `question` means the reference language question of a
-  proposition.
-
-* `content` is a Markdown document, detailing everything there is to know about the proposal
-   (tally methods, time frame, references, required etc..)
 
 ##### In a `vote`'s `vote_json` field
 
