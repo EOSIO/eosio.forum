@@ -1,0 +1,25 @@
+{"chain_id":"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+  "expiration": "2018-12-18T05:08:35",
+  "ref_block_num": 42637,
+  "ref_block_prefix": 90517177,
+  "max_net_usage_words": 0,
+  "max_cpu_usage_ms": 0,
+  "delay_sec": 0,
+  "context_free_actions": [],
+  "actions": [
+    {
+      "account": "eosio.msig",
+      "name": "approve",
+      "authorization": [
+        {
+          "actor": "eoscanadacom",
+          "permission": "active"
+        }
+      ],
+      "data": "802b35c94c8330550040a82a63a92f5d202932c94c83305500000000a8ed3232"
+    }
+  ],
+  "transaction_extensions": [],
+  "signatures": [],
+  "context_free_data": []
+}

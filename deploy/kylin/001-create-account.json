@@ -1,0 +1,47 @@
+{"chain_id":"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+  "expiration": "2019-01-21T11:54:50",
+  "ref_block_num": 38607,
+  "ref_block_prefix": 2895641767,
+  "max_net_usage_words": 0,
+  "max_cpu_usage_ms": 0,
+  "delay_sec": 0,
+  "context_free_actions": [],
+  "actions": [
+    {
+      "account": "eosio",
+      "name": "newaccount",
+      "authorization": [
+        {
+          "actor": "eoscanadacom",
+          "permission": "active"
+        }
+      ],
+      "data": "202932c94c833055104208219864a641010000000001202932c94c83305500000000a8ed3232010000010000000001202932c94c83305500000000a8ed3232010000"
+    },
+    {
+      "account": "eosio",
+      "name": "delegatebw",
+      "authorization": [
+        {
+          "actor": "eoscanadacom",
+          "permission": "active"
+        }
+      ],
+      "data": "202932c94c833055104208219864a641000000000000000004454f5300000000000000000000000004454f530000000000"
+    },
+    {
+      "account": "eosio",
+      "name": "buyrambytes",
+      "authorization": [
+        {
+          "actor": "eoscanadacom",
+          "permission": "active"
+        }
+      ],
+      "data": "202932c94c833055104208219864a64100b00400"
+    }
+  ],
+  "transaction_extensions": [],
+  "signatures": [],
+  "context_free_data": []
+}
