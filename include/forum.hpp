@@ -3,10 +3,13 @@
 #include <algorithm>
 #include <string>
 
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/time.hpp>
+#include <eosio/eosio.hpp>
+#include <eosio/time.hpp>
+#include <eosio/system.hpp>
 
+using eosio::check;
 using eosio::const_mem_fun;
+using eosio::current_time_point;
 using eosio::datastream;
 using eosio::indexed_by;
 using eosio::name;
@@ -69,6 +72,10 @@ class [[eosio::contract("forum")]] forum : public eosio::contract {
         // 6 months in seconds (Computatio: 6 months * average days per month * 24 hours * 60 minutes * 60 seconds)
         constexpr static uint32_t SIX_MONTHS_IN_SECONDS = (uint32_t) (6 * (365.25 / 12) * 24 * 60 * 60);
 
+        static inline time_point_sec current_time_point_sec() {
+            return time_point_sec(current_time_point());
+        }
+
         static uint128_t compute_by_proposal_key(const name proposal_name, const name voter) {
             return ((uint128_t) proposal_name.value) << 64 | voter.value;
         }
@@ -88,8 +95,8 @@ class [[eosio::contract("forum")]] forum : public eosio::contract {
             auto primary_key()const { return proposal_name.value; }
             uint64_t by_proposer() const { return proposer.value; }
 
-            bool is_expired() const { return time_point_sec(now()) >= expires_at; }
-            bool can_be_cleaned_up() const { return time_point_sec(now()) > (expires_at + FREEZE_PERIOD_IN_SECONDS);  }
+            bool is_expired() const { return current_time_point_sec() >= expires_at; }
+            bool can_be_cleaned_up() const { return current_time_point_sec() > (expires_at + FREEZE_PERIOD_IN_SECONDS);  }
         };
         typedef eosio::multi_index<
             "proposal"_n, proposal_row,

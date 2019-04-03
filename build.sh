@@ -6,7 +6,7 @@ BROWN='\033[0;33m'
 NC='\033[0m'
 
 CDT_CONTAINER=${CDT_CONTAINER:-"eoscanada/eosio-cdt"}
-CDT_VERSION=${CDT_VERSION:-"v1.4.1"}
+CDT_VERSION=${CDT_VERSION:-"v1.6.1"}
 
 image_id="${CDT_CONTAINER}:${CDT_VERSION}"
 
