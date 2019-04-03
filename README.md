@@ -59,7 +59,7 @@ arise by cleaning proposals.
 ### Development
 
 Prerequisites:
-- [Docker 17+](https://www.docker.com/get-started)
+- [Docker 17+](https://www.docker.com/get-started) (or [eosio.cdt](https://github.com/EOSIO/eosio.cdt) 1.6+ installed locally)
 - [eosc 1.1+](https://github.com/eoscanada/eosc/releases)
 - [eos-bios 1.2+](https://github.com/eoscanada/eos-bios/releases)
 
@@ -74,6 +74,16 @@ compiles the contract:
 
 ```
 ./build.sh
+```
+
+##### Local Toolchain
+
+For compilation purposes, it's possible to use the local [eosio.cdt](https://github.com/EOSIO/eosio.cdt)
+instead of pulling a Docker image containing it. Simply call `compile.sh` script
+to compile using the local EOSIO.CDT toolchain:
+
+```
+./compile.sh
 ```
 
 #### Running
