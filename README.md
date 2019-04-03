@@ -87,7 +87,7 @@ fully configured sandboxed `nodeos` development node:
 ```
 
 This creates the following accounts:
-- `eosforumrcpp`
+- `eosio.forum`
 - `proposer1`
 - `proposer2`
 - `poster1`
@@ -158,15 +158,16 @@ You would not like to push a freeze period of 2 seconds in the repository!
 
 ### Deployment
 
-The latest version of this code lives on the `eosforumrcpp` account on
-the EOS Mainnet and on the `cancancan345` account on the EOS Kylin network.
+The latest version of this code lives on the `eosio.forum` account on
+the EOS Mainnet.
 
-Tools that initially integrated support for this contract are:
-- [eosc](https://github.com/eoscanada/eosc) has a command-line interface
-  implementation to submit posts and votes.
-- [EOS ToolKit Forum Post](https://www.myeoskit.com/tools/referendums) allows you to post content through this contract.
-- MyEOSKit already has special casing for the `post` actions. See
-  [this transaction for example](https://www.myeoskit.com/?#/tx/c40e30d70ee92a0f57af475a828917851aa62b01bfbf395efae5c1a2b22068f0).
+There is also a few accounts that were used for development purposes
+as well as for testing updates to the contract. Here the list with some
+details about the status:
+- `eosforumrcpp` on EOS Mainnet (status: `release candidates`)
+- `cancancan345` on Kylin network (status: `unmaintained`)
+- `cancancan123` on Kylin network (status: `unmaintained`)
+- `eosforumdapp` on EOS Mainnet (status: `unmaintained`)
 
 ### Reference
 
@@ -190,7 +191,7 @@ Propose a new proposal to the community.
 - `proposer` (type `name`) - The actual proposer's account
 - `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
 - `title` (type `string`) - The proposal's title (must be less than 1024 characters)
-- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [Proposal JSON Structure](#proposal-json-structure-guidelines)
 - `expires_at` (type `time_point_sec`) - The expiration date of the proposal, must be no later than 6 months in the future, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
 ##### Rejections
@@ -204,7 +205,7 @@ Propose a new proposal to the community.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
+eosc tx create eosio.forum propose '{"proposer": "proposer1", "proposal_name": "example", "title": "The title, for list views", "proposal_json": "", "expires_at": "2019-01-30T17:03:20"}' -p proposer1@active
 ```
 OR
 
@@ -221,7 +222,7 @@ Vote for a given proposal using your account.
 - `voter` (type `name`) - The actual voter's account
 - `proposal_name` (type `name`) - The proposal's name to vote on
 - `vote` (type `uint8`) - Your vote on the proposal, `0` means a negative vote, `1` means a positive vote
-- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [General JSON Structure Guidelines](#general-json-structure-guidelines)
 
 ##### Rejections
 
@@ -233,7 +234,7 @@ Vote for a given proposal using your account.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
+eosc tx create eosio.forum vote '{"voter": "voter1", "proposal_name": "example", "vote": 0, "vote_json": ""}' -p voter1@active
 ```
 OR
 ```
@@ -266,7 +267,7 @@ is fully cleaned up so that every vote will be removed and RAM will be freed for
 ##### Example
 
 ```
-eosc tx create eosforumrcpp unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
+eosc tx create eosio.forum unvote '{"voter": "voter1", "proposal_name": "example"}' -p voter1@active
 ```
 OR
 ```
@@ -291,7 +292,7 @@ that created it. It's not valid to expire an already expired proposal.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp expire '{"proposal_name": "example"}' -p proposer1@active
+eosc tx create eosio.forum expire '{"proposal_name": "example"}' -p proposer1@active
 ```
 OR
 ```
@@ -335,7 +336,7 @@ fails due to excessive CPU usage. Find the sweet spot to avoid that.
 ##### Example
 
 ```
-eosc tx create eosforumrcpp clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
+eosc tx create eosio.forum clnproposal '{"proposal_name": "example", "max_count": 100}' -p voter1@active
 ```
 OR
 ```
@@ -352,7 +353,7 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 - `reply_to_poster` (type `name`) - The initial post's poster your post replies to
 - `reply_to_post_uuid` (type `string`) - The initial post's `UUID` your post replies to
 - `certify` (type `bool`) - Reserved for future use
-- `json_metadata` (type `string`) - The post's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `json_metadata` (type `string`) - The post's JSON metadata, no specification yet, see [General JSON Structure Guidelines](#general-json-structure-guidelines)
 
 ##### Rejections
 
@@ -370,7 +371,7 @@ eosc forum clean-proposal [cleaner_account_name] example 100
 ##### Example
 
 ```
-eosc tx create eosforumrcpp post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
+eosc tx create eosio.forum post '{"poster": "poster1", "post_uuid":"examplepost_id", "content": "hello world", "reply_to_poster": "", "reply_to_post_uuid": "", "certify": false, "json_metadata": "{\"type\": \"chat\"}"}' -p poster1@active
 ```
 OR
 ```
@@ -393,7 +394,7 @@ eosc forum post poster1 "hello world"
 ##### Example
 
 ```
-eosc tx create eosforumrcpp unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
+eosc tx create eosio.forum unpost '{"poster": "poster1", "post_uuid":"examplepost_id"}' -p poster1@active
 ```
 OR
 ```
@@ -419,13 +420,13 @@ previous status. Otherwise, it will add a status entry for the `account` using t
 Example (add status):
 
 ```
-eosc tx create eosforumrcpp status '{"account": "voter2", "content":"status of something"}' -p voter2@active
+eosc tx create eosio.forum status '{"account": "voter2", "content":"status of something"}' -p voter2@active
 ```
 
 Example (remove previous status):
 
 ```
-eosc tx create eosforumrcpp status '{"account": "voter2", "content":""}' -p voter2@active
+eosc tx create eosio.forum status '{"account": "voter2", "content":""}' -p voter2@active
 ```
 OR
 ```
@@ -444,7 +445,7 @@ eosc forum status voter2 ""
 - `proposal_name` (type `name`) - The proposal's name, its ID among all proposals
 - `proposer` (type `name`) - The actual proposer's account
 - `title` (type `string`) - The proposal's title, a brief description of the proposal
-- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `proposal_json` (type `string`) - The proposal's JSON metadata, no specification yet, see [Proposal JSON Structure Guidelines](#proposal-json-structure-guidelines)
 - `created_at` (type `time_point_sec`) - The date at which the proposal's was created, ISO 8601 string format (in UTC) **without** a timezone modifier.
 - `expires_at` (type `time_point_sec`) - The date at which the proposal's will expire, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
@@ -455,7 +456,7 @@ eosc forum status voter2 ""
 ##### Example (get all proposals):
 
 ```
-eosc get table eosforumrcpp eosforumrcpp proposal
+eosc get table eosio.forum eosio.forum proposal
 ```
 OR
 ```
@@ -472,7 +473,7 @@ So, looking for all proposals proposed by `testusertest`, the lower bound key wo
 the upper bound key would be `testusertesu` (last character `t` bumped to next one `u`).
 
 ```
-eosc get table eosforumrcpp eosforumrcpp proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
+eosc get table eosio.forum eosio.forum proposal --index 2 --key-type name --lower-bound testusertest --upper-bound testusertesu
 ```
 OR
 ```
@@ -489,7 +490,7 @@ eosc forum list --from-proposer testusertest
 ##### Example
 
 ```
-eosc get table eosforumrcpp eosforumrcpp status
+eosc get table eosio.forum eosio.forum status
 ```
 
 #### Table `vote`
@@ -499,7 +500,7 @@ eosc get table eosforumrcpp eosforumrcpp status
 - `proposal_name` (type `name`) - The `proposal_name` on which the vote applies
 - `voter` (type `name`) - The `voter` that voted
 - `vote` (type `uint8`) - The vote value of the `voter` (`0` means negative vote, `1` means a positive vote)
-- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [JSON Structure Guidelines](#json-structure-guidelines)
+- `vote_json` (type `string`) - The vote's JSON metadata, no specification yet, see [General JSON Structure Guidelines](#general-json-structure-guidelines)
 - `updated_at` (type `time_point_sec`) - The date at which the vote was last updated, ISO 8601 string format (in UTC) **without** a timezone modifier.
 
 ##### Indexes
@@ -510,7 +511,7 @@ eosc get table eosforumrcpp eosforumrcpp status
 ##### Example (get all votes):
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote
+eosc get table eosio.forum eosio.forum vote
 ```
 
 ##### Example (get all votes for a given proposal):
@@ -542,7 +543,7 @@ Here are the steps to compute the lower/upper bounds for the table query:
 Now that we have the lower and upper bound keys, simply perform your query:
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
+eosc get table eosio.forum eosio.forum vote --index 2 --key-type i128 --lower-bound 0x00000000000000000040c62a2baca5b9 --upper-bound 0xffffffffffffffff0040c62a2baca5b9
 ```
 
 You will see only the votes against the proposal `ramusetest`.
@@ -576,31 +577,41 @@ Here the steps to compute the lower/upper bounds for the table query:
 Now that we have the lower and upper bound keys, simply perform your query:
 
 ```
-eosc get table eosforumrcpp eosforumrcpp vote --index 3 --key-type i128 --lower-bound 0x000000000000000090b1ca57619db1ca --upper-bound 0xffffffffffffffff90b1ca57619db1ca
+eosc get table eosio.forum eosio.forum vote --index 3 --key-type i128 --lower-bound 0x000000000000000090b1ca57619db1ca --upper-bound 0xffffffffffffffff90b1ca57619db1ca
 ```
 
 You will see only the proposals that voter `testusertest` voted for.
 
-#### JSON Structure Guidelines
+#### Proposal JSON Structure Guidelines
 
-You can use any vocabulary you want when creating posts, proposals and
-votes, there is no specification yet for the JSON. However, by following
+The `proposal_json` should be structured against the EOS Enhancement Proposal 4
+([EEP-4](https://eeps.io/EEPS/eep-4)) which describes how the `proposal_json`
+field should be structured based on a predefined set of proposal types.
+
+While it's not strictly required to follow the guidelines in [EEP-4](https://eeps.io/EEPS/eep-4),
+it's strongly suggested to do so as UI, vote tallies and related tools
+use the guidelines in [EEP-4](https://eeps.io/EEPS/eep-4) to provide their
+services.
+
+If you decide to not follow the guidelines and instead create you own type(s),
+it's highly encouraged to have a `type` field in your JSON string describing
+your proposal type. Be sure that it does not collapse with the ones defined in
+[EEP-4](https://eeps.io/EEPS/eep-4).
+
+Of course, if you think your new type could be beneficial to the broader
+community of EOS, you are invited to submit changes to [EEP-4](https://eeps.io/EEPS/eep-4)
+via a GitHub pull request on the [EEP Repository](https://github.com/eoscanada/eeps).
+
+#### General JSON Structure Guidelines
+
+You can use any vocabulary you want when creating posts and votes, there
+is no specification yet for the JSON of those actions. However, by following
 some simple guidelines, you can simplify your life and the life of those
 building UIs around these messages.
 
-For all `json` prefixed or suffixed fields in `propose`, `vote` and
+For all `json` prefixed or suffixed fields in `vote` and
 `post`, the `type` field should determine a higher order protocol, and
 determines what other sibling fields will be required.
-
-##### In a `propose`'s `proposal_json` field
-
-* `type` is a required field to distinguish protocol. See types in the section below.
-
-* `question` means the reference language question of a
-  proposition.
-
-* `content` is a Markdown document, detailing everything there is to know about the proposal
-   (tally methods, time frame, references, required etc..)
 
 ##### In a `vote`'s `vote_json` field
 

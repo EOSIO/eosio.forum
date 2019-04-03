@@ -3,7 +3,7 @@ export EOSC_GLOBAL_INSECURE_VAULT_PASSPHRASE=${EOSC_GLOBAL_INSECURE_VAULT_PASSPH
 export EOSC_GLOBAL_API_URL=${EOSC_GLOBAL_API_URL:-"http://localhost:9898"}
 export EOSC_GLOBAL_VAULT_FILE="$ROOT/eosc-vault.json"
 
-export CONTRACT=${EOS_TEST_CONTRACT:-"eosforumrcpp"}
+export CONTRACT=${EOS_TEST_CONTRACT:-"eosio.forum"}
 
 export CHARS_50="abcdefhijklmnopqrstuwxyabcdefhijklmnopqrstuwxy0123"
 export CHARS_250="${CHARS_50}${CHARS_50}${CHARS_50}${CHARS_50}${CHARS_50}"

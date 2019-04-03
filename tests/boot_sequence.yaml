@@ -136,62 +136,62 @@ boot_sequence:
 ### Test setup
 
 - op: system.newaccount
-  label: Create account eosforumrcpp
+  label: Create account eosio.forum
   data:
     creator: eosio
-    new_account: eosforumrcpp
+    new_account: eosio.forum
     pubkey: ephemeral
 
 - op: system.setcode
-  label: Setting eosio.forum code for account eosforumrcpp
+  label: Setting eosio.forum code for account eosio.forum
   data:
-    account: eosforumrcpp
+    account: eosio.forum
     contract_name_ref: forum
 
 - op: system.newaccount
-  label: Create proposer1 account for eosforumrcpp
+  label: Create proposer1 account for eosio.forum
   data:
     creator: eosio
     new_account: proposer1
     pubkey: ephemeral
 
 - op: system.newaccount
-  label: Create proposer2 account for eosforumrcpp
+  label: Create proposer2 account for eosio.forum
   data:
     creator: eosio
     new_account: proposer2
     pubkey: ephemeral
 
 - op: system.newaccount
-  label: Create poster1 account for eosforumrcpp
+  label: Create poster1 account for eosio.forum
   data:
     creator: eosio
     new_account: poster1
     pubkey: ephemeral
 
 - op: system.newaccount
-  label: Create poster2 account for eosforumrcpp
+  label: Create poster2 account for eosio.forum
   data:
     creator: eosio
     new_account: poster2
     pubkey: ephemeral
 
 - op: system.newaccount
-  label: Create voter1 account for eosforumrcpp
+  label: Create voter1 account for eosio.forum
   data:
     creator: eosio
     new_account: voter1
     pubkey: ephemeral
 
 - op: system.newaccount
-  label: Create zzzzzzzzzzzz account for eosforumrcpp
+  label: Create zzzzzzzzzzzz account for eosio.forum
   data:
     creator: eosio
     new_account: zzzzzzzzzzzz
     pubkey: ephemeral
 
 - op: system.newaccount
-  label: Create voter2 account for eosforumrcpp
+  label: Create voter2 account for eosio.forum
   data:
     creator: eosio
     new_account: voter2
